@@ -18,7 +18,7 @@ class Torus:
 
 def main():
     #testing
-    t = 1
+    t = 2
    
     if t == 0:
          #plotting a5
@@ -34,15 +34,36 @@ def main():
         
         plt.show()
 
-    else:
+    elif t == 1:
         #testing la classe dei polinomi in x,y
         p = Poly2var('1 2 3; 4 5 6; 7 8 9',3)
         print(p.get_homogenous_comps())
         print(p.get_degree())
+        p.print()
 
-        print(p.dx())
-        print(p.dy())
+        gr = p.gradient()
+        gr[0].print()
+        gr[1].print()
 
+         #testing la funzione che valuta un polinomio
+        q = Poly2var('5 1; 2 1')
+        q.print()
+        print(q.value(1,3))
+        print(gr[0].value(1,0))
+        print(gr[0].value(0,1))
+        print(gr[0].value(0,1))
+
+    else:
+        #testing la classe myFunction f = (f1,f2) con f1,f2 Poly2var
+        #testing costruttore generale
+        f = myFunction('stocazzo','1 2 3; 4 5 6; 7 8 9','1 2; 4 5')
+        #print(f.gradient())
+        f.gradient()[0][0].print()
+        f.gradient()[0][1].print()
+        f.gradient()[1][0].print()
+        f.gradient()[1][1].print()
+        
+       
 
 
 if __name__ == "__main__":
