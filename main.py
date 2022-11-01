@@ -13,12 +13,24 @@ class S2:
 
 class Torus:
     #[0,1]x[0,1] con le relazioni quozienti del toro
-    def __init__(self):
+
+    #CONSTRUCTOR
+    def __init__(self, precision):
+        #il più grande sia il valore di precision più punti del toro considero
+        self.precision = precision
+        i = 1/precision
+        self.points = np.mgrid[0:1:i, 0:1:i]
         pass
+
+    #GETTERS
+    def get_points(self):
+        return self.points
+
+
 
 def main():
     #testing
-    t = 2
+    t = 3
    
     if t == 0:
          #plotting a5
@@ -36,7 +48,9 @@ def main():
 
     elif t == 1:
         #testing la classe dei polinomi in x,y
-        p = Poly2var('1 2 3; 4 5 6; 7 8 9',3)
+        #p = Poly2var('1 2 3; 4 5 6; 7 8 9',3)
+        coeffs = None
+        p = Poly2var(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), 3)
         print(p.get_homogenous_comps())
         print(p.get_degree())
         p.print()
@@ -46,22 +60,31 @@ def main():
         gr[1].print()
 
          #testing la funzione che valuta un polinomio
-        q = Poly2var('5 1; 2 1')
+        q = Poly2var(np.array([[5,1],[2,1]]))
         q.print()
         print(q.value(1,3))
         print(gr[0].value(1,0))
         print(gr[0].value(0,1))
         print(gr[0].value(0,1))
 
-    else:
+    elif t == 2:
         #testing la classe myFunction f = (f1,f2) con f1,f2 Poly2var
         #testing costruttore generale
-        f = myFunction('stocazzo','1 2 3; 4 5 6; 7 8 9','1 2; 4 5')
-        #print(f.gradient())
+        f1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        f2 = np.array([[5,1],[2,1]])
+        f = myFunction('stocazzo',f1,f2)
+
+        #Testing gradient of myFunction
         f.gradient()[0][0].print()
         f.gradient()[0][1].print()
         f.gradient()[1][0].print()
         f.gradient()[1][1].print()
+        print(f.gradient_value(1,1))
+
+    elif t == 3:
+        #testing la classe Torus
+        t = Torus(4)
+        print(t.get_points())
         
        
 

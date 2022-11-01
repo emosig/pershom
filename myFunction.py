@@ -28,29 +28,34 @@ class Poly2var:
     #I coefficienti li salvo come una matrice quadrata a_{ij} = coeff per x^i*y^j
     #Esempio: '1 0 3; 0 2 2; 0 0 1' <--> x^2y^2 + 2x^2y + 2xy + 3x^2 + 1
 
+    #1-11 Oggi mi sono reso conto che la classe numpy.matrix è deprecated.
+    #Bisogna utilizzare invece la classe numpy.ndarray
+
     #CONSTRUCTOR
     def __init__(self, coeffs, size = 0):
         self.size = size
         #Throws different exceptions if there was a problem constructing the matrix
         try:
             #initalize a zero polynomial (null matrix)
-            if coeffs == None:
-                if size == 0 or size == None:
+            #if coeffs == None:
+            #    if size == 0 or size == None:
+            #        raise EmptyMatrixError()
+            #    else:
+            #        self.coeffmat = np.zeros((size,size))
+
+            if size == 0 and coeffs.size == 0: 
                     raise EmptyMatrixError()
-                else:
+
+            #initalize a zero polynomial (null matrix)
+            elif size != 0 and coeffs.size == 0:
                     self.coeffmat = np.zeros((size,size))
-                    
+
             #nonzero polynomial
             else:
-                self.coeffmat = np.matrix(coeffs)
-                s = self.coeffmat.shape
-                if len(s) != 2:
-                    raise PolySizeError(len(s))
-                else:
-                    if s[0] != s[1]:
-                        raise PolyNonSquareError(0)
-                    else:
-                        self.size = s[0] #shape returns (m,n) for a matrix with m rows and n columns.
+                #self.coeffmat = np.matrix(coeffs)      DEPRECATED !!!
+                self.coeffmat = coeffs
+                self.size = coeffs.shape[0]
+
         except EmptyMatrixError:
             print('Provide either a size for the matrix or a sequence of coefficients')
         except PolyNonSquareError:
@@ -64,7 +69,8 @@ class Poly2var:
 
     #Lista di compenenti omogenei del polinomio // diagonali secondarie della matrice
     def get_homogenous_comps(self):
-        M = self.coeffmat.getA()
+        #M = self.coeffmat.getA()
+        M = self.coeffmat
         diags = [M[::-1,:].diagonal(i) for i in range(-M.shape[0]+1,M.shape[1])]
         return diags
 
@@ -96,7 +102,7 @@ class Poly2var:
     #derivate parziali (ritorna un Poly2var)
     def dx(self):
         n = self.size
-        M = Poly2var(None,n)
+        M = Poly2var(np.array([]),n)
         for x in range(n):
             for y in range(n-1):
                 M.set_elem(x,y,(y+1)*self.coeffmat[x,y+1])
@@ -105,7 +111,7 @@ class Poly2var:
 
     def dy(self):
         n = self.size
-        M = Poly2var(None,n)
+        M = Poly2var(np.array([]),n)
         for x in range(n-1):
             for y in range(n):
                 M.set_elem(x,y,(x+1)*self.coeffmat[x+1,y])
@@ -125,20 +131,33 @@ class myFunction:
     #As for now, myFuction \in \mathbb{Z}[x]
     #For functions on the sfere i will need polynomials in x,y,z... Poly3var?
 
-    #Costruttore generale
+    #CONSTRUCTOR
     def __init__(self, *inp):
         self.domain = inp[0]    #Sphere or torus
-        if len(inp) == 3 and isinstance(inp[1],str) and isinstance(inp[2],str):
+        if len(inp) == 3 and isinstance(inp[1],np.ndarray) and isinstance(inp[2],np.ndarray):
             self.f1 = Poly2var(inp[1])
             self.f2 = Poly2var(inp[2])
-        elif len(inp) == 5 and isinstance(inp[3],str) and isinstance(inp[4],str):
+        elif len(inp) == 5 and isinstance(inp[3],np.ndarray) and isinstance(inp[4],np.ndarray):
             self.sizef1 = inp[1]
             self.sizef1 = inp[2]
             self.f1 = Poly2var(inp[3],inp[1])
             self.f2 = Poly2var(inp[4],inp[2])
 
+    #GETTERS
     def getf1(self):
         return self.f1
+    
+    def getf2(self):
+        return self.f2
 
+    #OTHER FUNCTIONS
+    #Ritorna il gradiente come coppia di matrici (polinomi in x,y)
     def gradient(self):
         return (self.f1.gradient(), self.f2.gradient())
+    
+    #Valuta il gradiente
+    def gradient_value(self,x,y):
+        gr = self.gradient()
+        nabla0 = (gr[0][0].value(x,y), gr[0][1].value(x,y))
+        nabla1 = (gr[1][0].value(x,y), gr[1][1].value(x,y))
+        return (nabla0, nabla1)
