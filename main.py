@@ -4,47 +4,52 @@ import numpy as np
 from itertools import product, combinations
 
 from myFunction import *
+from myPlotter import *
 
 #M -> R^2, M toro or sfera
-class S2:
+class Variety:
+    pass
+
+class S2(Variety):
     def __init__(self):
         pass
 
-
-class Torus:
+class Torus(Variety):
     #[0,1]x[0,1] con le relazioni quozienti del toro
 
     #CONSTRUCTOR
     def __init__(self, precision):
         #il più grande sia il valore di precision più punti del toro considero
         self.precision = precision
-        i = 1/precision
-        self.points = np.mgrid[0:1:i, 0:1:i]
-        pass
+        eps = 1/precision
+
+        #Questo salva un array di coordinate x e un array di coordinate y di punti del toro
+        self.point_coords = np.mgrid[0:1:eps, 0:1:eps]
 
     #GETTERS
-    def get_points(self):
-        return self.points
+    def get_point_coords(self):
+        return self.point_coords
 
 
 
 def main():
     #testing
-    t = 3
+    t = 0
    
     if t == 0:
-         #plotting a5
-        fig = plt.figure(figsize=(8, 6))
-        ax = fig.add_subplot(projection='3d')
-    
-        # questo pezzo qua dipinge una palla
-        u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-        x = np.cos(u)*np.sin(v)
-        y = np.sin(u)*np.sin(v)
-        z = np.cos(v)
-        ax.plot_wireframe(x, y, z, color="r")
-        
-        plt.show()
+        #Basta di plottare palle! Testing della classe myPlotter
+
+        #Con questi dati lui fa una cosa orribile
+        x = [2.50, -1.23, 4.02, 3.25, -5.00, 4.40]
+        y = [34, 62, -49, -22, 13, 19]
+
+        #Con dati stupidi lui si comporta bene
+        #x = [2, 1, 0, -1, -2, -3, -4, -5]
+        #y = [-1, 0, 1, 2, 3, 4, 5, 6]
+
+        plotter = myPlotter(x,y)
+        plotter.plot('poly5')
+        plotter.plot('sine2') #per la prima scelta di dati questo qua sembra funzionare un po' meglio
 
     elif t == 1:
         #testing la classe dei polinomi in x,y
@@ -72,7 +77,7 @@ def main():
         #testing costruttore generale
         f1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         f2 = np.array([[5,1],[2,1]])
-        f = myFunction('stocazzo',f1,f2)
+        f = myFunction('Torus',f1,f2)
 
         #Testing gradient of myFunction
         f.gradient()[0][0].print()
@@ -83,10 +88,12 @@ def main():
 
     elif t == 3:
         #testing la classe Torus
-        t = Torus(4)
-        print(t.get_points())
+        t = Torus(5)
+        print(t.get_point_coords())
+
+
         
-       
+        
 
 
 if __name__ == "__main__":

@@ -36,13 +36,6 @@ class Poly2var:
         self.size = size
         #Throws different exceptions if there was a problem constructing the matrix
         try:
-            #initalize a zero polynomial (null matrix)
-            #if coeffs == None:
-            #    if size == 0 or size == None:
-            #        raise EmptyMatrixError()
-            #    else:
-            #        self.coeffmat = np.zeros((size,size))
-
             if size == 0 and coeffs.size == 0: 
                     raise EmptyMatrixError()
 
@@ -52,7 +45,6 @@ class Poly2var:
 
             #nonzero polynomial
             else:
-                #self.coeffmat = np.matrix(coeffs)      DEPRECATED !!!
                 self.coeffmat = coeffs
                 self.size = coeffs.shape[0]
 
@@ -69,7 +61,6 @@ class Poly2var:
 
     #Lista di compenenti omogenei del polinomio // diagonali secondarie della matrice
     def get_homogenous_comps(self):
-        #M = self.coeffmat.getA()
         M = self.coeffmat
         diags = [M[::-1,:].diagonal(i) for i in range(-M.shape[0]+1,M.shape[1])]
         return diags
