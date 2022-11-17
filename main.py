@@ -6,6 +6,8 @@ from itertools import product, combinations
 from myFunction import *
 from myPlotter import *
 
+
+
 #M -> R^2, M toro or sfera
 class Variety:
     pass
