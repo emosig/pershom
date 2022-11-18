@@ -3,17 +3,23 @@ import numpy as np
 #leggere tests.ipynb
 
 class Monomial:
+    #CONSTRUCTOR
     def __init__(self, r,a,b,c,d):
         self.r = r
         self.a = a
         self.b = b
-        self.c = r
-        self.r = r
+        self.c = c
+        self.d = d
         self.deg = a+b+c+d    #grado
 
+    #GETTERS
     def get_degree(self):
         return self.deg
     
+    def get_coeffs(self):
+        return [self.r,self.a,self.b,self.c,self.d]
+    
+    #OTHER
     #Ogni derivata parziale ritorna una somma di due monomi di grado k-1
     def dx(self):
         a = self.a
@@ -33,14 +39,20 @@ class Monomial:
         return self.r*(np.sin(x)**self.a)*(np.cos(x)**self.b)*(np.sin(y)**self.c)*(np.cos(y)**self.d)
 
 class HomogComp:
+    #CONSTRUCTOR
     #m è una lista non vuota di Monomial
     def __init__(self, m):
         self.monomials = m
         self.deg = m[0].get_degree()
+
+    #GETTERS
+    def get_monomials(self):
+        return self.monomials
     
     def get_degree(self):
         return self.deg
 
+    #OTHER
     def dx(self):
         l = []      #lista di Monomial di grado k-1
         for m in self.monomials:
@@ -66,16 +78,50 @@ class HomogComp:
         return value
     
 class myPolynomial:
+    #CONSTRUCTOR
     #h è un dictonary non vuoto grado - comp omogenee
     def __init__(self, h):
         self.comps = h
+
+    #OTHER
+    #per printare il polinomio in modo comodo
+    def __str__(self):
+        p = ''
+        for k in self.comps.keys():
+            for m in self.comps[k].get_monomials():
+                coeffs = m.get_coeffs()
+                #trasformo il monomio in string
+                if coeffs[0] != 0:
+                    strlist = []
+                    if coeffs[0] != 1:
+                        strlist.append(str(coeffs[0]))
+                    if coeffs[1] != 0:
+                        if coeffs[1] == 1:
+                            coeffs[1] = ''
+                        strlist.append('sin^' + str(coeffs[1]) + 'x ')
+                    if coeffs[2] != 0:
+                        if coeffs[2] == 1:
+                            coeffs[2] = ''
+                        strlist.append('cos^' + str(coeffs[2]) + 'x ')
+                    if coeffs[3] != 0:
+                        if coeffs[3] == 1:
+                            coeffs[3] = ''
+                        strlist.append('sin^' + str(coeffs[3]) + 'y ')
+                    if coeffs[4] != 0:
+                        if coeffs[4] == 1:
+                            coeffs[4] = ''
+                        strlist.append('cos^' + str(coeffs[4]) + 'y ')
+                    strlist.append('+ ')
+                    p += str().join(strlist)
+        return p.removesuffix('+ ')
 
     def dx(self):
         comps = {}
         for k in self.comps.keys():
             #Per ogni grado k derivo e aggiungo la componente omogenea derivata nella key k-1 del nuovo dictionary
             h = self.comps[k].dx()
-            comps[k-1].append(h)
+            #comps[k-1].append(h)
+            comps[k-1] = h
         dx = myPolynomial(comps)
         return dx
 
@@ -84,7 +130,8 @@ class myPolynomial:
         for k in self.comps.keys():
             #Per ogni grado k derivo e aggiungo la componente omogenea derivata nella key k-1 del nuovo dictionary
             h = self.comps[k].dy()
-            comps[k-1].append(h)
+            #comps[k-1].append(h)
+            comps[k-1] = h
         dy = myPolynomial(comps)
         return dy
 

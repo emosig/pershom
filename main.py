@@ -5,8 +5,7 @@ from itertools import product, combinations
 
 from myFunction import *
 from myPlotter import *
-
-
+from myPolynomial import *
 
 #M -> R^2, M toro or sfera
 class Variety:
@@ -36,7 +35,7 @@ class Torus(Variety):
 
 def main():
     #testing
-    t = 0
+    t = 4
    
     if t == 0:
         #Basta di plottare palle! Testing della classe myPlotter
@@ -92,6 +91,29 @@ def main():
         #testing la classe Torus
         t = Torus(5)
         print(t.get_point_coords())
+
+    elif t == 4:
+        monomio0 = Monomial(7,0,0,0,0)
+        h0 = HomogComp([monomio0])
+        monomio11 = Monomial(1,0,1,0,0)
+        monomio12 = Monomial(1,0,0,0,1)
+        h1 = HomogComp([monomio11, monomio12])
+        monomio3 = Monomial(1,1,0,2,0)
+        h3 = HomogComp([monomio3])
+
+        dic = {0:h0, 1:h1, 3:h3}
+        polinomio = myPolynomial(dic)
+        print(polinomio)
+        
+        #esempi più semplici
+        poli = myPolynomial({1:h1}) 
+
+        print(poli)
+        print(poli.eval(np.pi,np.pi/2))
+
+        #ho fatto due prove --> assumo che funzionano
+
+        print(poli.gradient()) #questo non va bene
 
 
         
