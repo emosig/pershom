@@ -151,7 +151,7 @@ def main():
         h2 = HomogComp([monomio2])
         f2 = myPolynomial({2:h2})     
 
-        pareto = EPG(5,5,f1,f2)
+        pareto = EPG(50,100,f1,f2)
         pareto.crit()
 
         
