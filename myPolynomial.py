@@ -4,13 +4,20 @@ import numpy as np
 
 class Monomial:
     #CONSTRUCTOR
-    def __init__(self, r,a,b,c,d):
+    def __init__(self,r,a,b,c,d):
         self.r = r
-        self.a = a
-        self.b = b
-        self.c = c
-        self.d = d
-        self.deg = a+b+c+d    #grado
+        if r == 0:
+            self.a = 0
+            self.b = 0
+            self.c = 0
+            self.d = 0
+            self.deg = 0
+        else:
+            self.a = a
+            self.b = b
+            self.c = c
+            self.d = d
+            self.deg = a+b+c+d    #grado
 
     #GETTERS
     def get_degree(self):
@@ -24,15 +31,15 @@ class Monomial:
     def dx(self):
         a = self.a
         b = self.b
-        dx1 = Monomial(a*self.r,a-1,b,self.c,self.d)
-        dx2 = Monomial(b*self.r,a,b-1,self.c,self.d)
+        dx1 = Monomial(a*self.r,a-1,b+1,self.c,self.d) 
+        dx2 = Monomial(-b*self.r,a+1,b-1,self.c,self.d)
         return (dx1,dx2)
 
     def dy(self):
         c = self.c
         d = self.d
-        dy1 = Monomial(c*self.r,self.a,self.b,c-1,d)
-        dy2 = Monomial(d*self.r,self.a,self.b,c,d-1)
+        dy1 = Monomial(c*self.r,self.a,self.b,c-1,d+1)
+        dy2 = Monomial(-d*self.r,self.a,self.b,c+1,d-1)
         return (dy1,dy2)
 
     def eval(self,x,y):
@@ -53,6 +60,36 @@ class HomogComp:
         return self.deg
 
     #OTHER
+    #per printare il polinomio in modo comodo
+    def __str__(self):
+        p = ''
+        for m in self.monomials:
+            coeffs = m.get_coeffs()
+            #trasformo il monomio in string
+            if coeffs[0] != 0:
+                strlist = []
+                if coeffs[0] != 1:
+                    strlist.append(str(coeffs[0]))
+                if coeffs[1] != 0:
+                    if coeffs[1] == 1:
+                        coeffs[1] = ''
+                    strlist.append('sin^' + str(coeffs[1]) + 'x ')
+                if coeffs[2] != 0:
+                    if coeffs[2] == 1:
+                        coeffs[2] = ''
+                    strlist.append('cos^' + str(coeffs[2]) + 'x ')
+                if coeffs[3] != 0:
+                    if coeffs[3] == 1:
+                        coeffs[3] = ''
+                    strlist.append('sin^' + str(coeffs[3]) + 'y ')
+                if coeffs[4] != 0:
+                    if coeffs[4] == 1:
+                        coeffs[4] = ''
+                    strlist.append('cos^' + str(coeffs[4]) + 'y ')
+                strlist.append('+ ')
+                p += str().join(strlist)
+        return p.removesuffix('+ ')
+
     def dx(self):
         l = []      #lista di Monomial di grado k-1
         for m in self.monomials:
@@ -78,6 +115,9 @@ class HomogComp:
         return value
     
 class myPolynomial:
+    #BISOGNA creare delle eccecioni per controllare che non mi stanno passando delle
+    #componenti omogenee con il grado sbagliato
+
     #CONSTRUCTOR
     #h è un dictonary non vuoto grado - comp omogenee
     def __init__(self, h):
