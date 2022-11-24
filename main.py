@@ -43,6 +43,7 @@ class Torus(Variety):
 
 
 def main():
+    #Ho cancellato alcune prove che non servono più
     #testing
     t = 5
    
@@ -62,42 +63,10 @@ def main():
         plotter.plot('sine2') #per la prima scelta di dati questo qua sembra funzionare un po' meglio
 
     elif t == 1:
-        #DEPRECATED: non serve più questa cosa
-        #testing la classe dei polinomi in x,y
-        #p = Poly2var('1 2 3; 4 5 6; 7 8 9',3)
-        coeffs = None
-        p = Poly2var(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), 3)
-        print(p.get_homogenous_comps())
-        print(p.get_degree())
-        p.print()
-
-        gr = p.gradient()
-        gr[0].print()
-        gr[1].print()
-
-         #testing la funzione che valuta un polinomio
-        q = Poly2var(np.array([[5,1],[2,1]]))
-        q.print()
-        print(q.value(1,3))
-        print(gr[0].value(1,0))
-        print(gr[0].value(0,1))
-        print(gr[0].value(0,1))
-
-    elif t == 2:
-        #DEPRECATED
-        #testing la classe myFunction f = (f1,f2) con f1,f2 Poly2var
-        #testing costruttore generale
-        f1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-        f2 = np.array([[5,1],[2,1]])
-        f = myFunction('Torus',f1,f2)
-
-        #Testing gradient of myFunction
-        f.gradient()[0][0].print()
-        f.gradient()[0][1].print()
-        f.gradient()[1][0].print()
-        f.gradient()[1][1].print()
-        print(f.gradient_value(1,1))
-
+        #testing parser di myPolynomial
+        msg1 = "senxcos^3y+8+seny"
+        msg2 = "4+(sen^2x)*(cos^2y)"
+        msg_errore = "4senycosx"
     elif t == 3:
         #testing la classe Torus
         t = Torus(5)
