@@ -187,4 +187,30 @@ class myPolynomial:
 
 #¿Non sarebbe bello avere una funzione che dato un input di testo costruisce un polinomio?
 def parse(msg):
-    pass #Lo farò più avanti
+    monomi = []
+    #Separo per monomi
+    msg = msg.split("+")
+    for mono in msg:
+        if len(mono) == 1:
+            #È un termine indipendente
+            monomi.append(Monomial((int(mono)),0,0,0,0))
+        else:
+            #Separo il monomio in fattori
+            mono = mono.split("(")
+            a,b,c,d = 0
+            r = 1
+            for f in mono:
+                l = len(f)
+                if f[l-1] == ")":
+                    f = f[:-1]
+                if l == 1:
+                    r = int(f[0])
+                if f[l-2] == "x":
+                    pass
+    #WORK IN PROGRESS
+    
+                
+
+    #testing
+    for mono in monomi:
+        print(mono)
