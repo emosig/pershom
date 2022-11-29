@@ -186,6 +186,7 @@ class myPolynomial:
 
 
 #¿Non sarebbe bello avere una funzione che dato un input di testo costruisce un polinomio?
+#Per ora con parentese e senza spazi
 def parse(msg):
     monomi = []
     #Separo per monomi
@@ -197,17 +198,44 @@ def parse(msg):
         else:
             #Separo il monomio in fattori
             mono = mono.split("(")
-            a,b,c,d = 0
+            a = b = c = d = 0
             r = 1
             for f in mono:
                 l = len(f)
-                if f[l-1] == ")":
-                    f = f[:-1]
-                if l == 1:
-                    r = int(f[0])
-                if f[l-2] == "x":
-                    pass
-    #WORK IN PROGRESS
+                if l > 0:
+                    if f[l-1] == ")":
+                        f = f[:-1]
+                    if l == 1:
+                        r = int(f[0])
+                    elif f[l-2] == "x" and f[0] == "s":
+                        if "^" in f:    #se l'esponente è > 1 c'è "^"
+                            a = int(f[4])
+                        else:
+                            a = 1
+                    elif f[l-2] == "x" and f[0] == "c":
+                        if "^" in f: 
+                            b = int(f[4])
+                        else:
+                            b = 1
+                    elif f[l-2] == "y" and f[0] == "s":
+                        if "^" in f: 
+                            c = int(f[4])
+                        else:
+                            c = 1
+                    elif f[l-2] == "y" and f[0] == "c":
+                        if "^" in f: 
+                            d = int(f[4])
+                        else:
+                            d = 1
+            m = Monomial(r,a,b,c,d)
+            monomi.append(m)
+     #WORK IN PROGRESS
+     #FUNZIONA QUASI
+     #Ritorna una lista di monomi, invece dovrebbe ritornare 
+    return monomi
+            
+                    
+   
     
                 
 

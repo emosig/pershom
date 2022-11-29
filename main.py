@@ -45,7 +45,7 @@ class Torus(Variety):
 def main():
     #Ho cancellato alcune prove che non servono più
     #testing
-    t = 5
+    t = 1 
    
     if t == 0:
         #Basta di plottare palle! Testing della classe myPlotter
@@ -64,9 +64,13 @@ def main():
 
     elif t == 1:
         #testing parser di myPolynomial
-        msg1 = "senxcos^3y+8+seny"
+        msg1 = "(senx)(cos^3y)+8+seny"
         msg2 = "4+(sen^2x)*(cos^2y)"
-        msg_errore = "4senycosx"
+        msg_errore = "4(seny)(cosx)"
+        for m in parse(msg1):
+            print(m.get_coeffs())
+
+
     elif t == 3:
         #testing la classe Torus
         t = Torus(5)
