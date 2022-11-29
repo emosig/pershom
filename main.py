@@ -67,8 +67,12 @@ def main():
         msg1 = "(senx)(cos^3y)+8+seny"
         msg2 = "4+(sen^2x)*(cos^2y)"
         msg_errore = "4(seny)(cosx)"
-        for m in parse(msg1):
-            print(m.get_coeffs())
+        for h in parse(msg1).values():
+            for m in h:
+                print("MONOMIO:" + '\n')
+                print(m.eval(0,1))
+                print(m.eval(1,0))
+                print(m.get_degree())
 
 
     elif t == 3:
