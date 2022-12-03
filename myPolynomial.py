@@ -191,6 +191,7 @@ def parse(msg):
     monomi = {0:[]}
     #Separo per monomi
     msg = msg.split("+")
+    pol_deg = 0
     for mono in msg:
         maxdeg = 0
         if len(mono) == 1:
@@ -206,24 +207,25 @@ def parse(msg):
                 if l > 0:
                     if f[l-1] == ")":
                         f = f[:-1]
+                        l = l-1
                     if l == 1:
                         r = int(f[0])
-                    elif f[l-2] == "x" and f[0] == "s":
+                    elif f[l-1] == "x" and f[0] == "s":
                         if "^" in f:    #se l'esponente è > 1 c'è "^"
                             a = int(f[4])
                         else:
                             a = 1
-                    elif f[l-2] == "x" and f[0] == "c":
+                    elif f[l-1] == "x" and f[0] == "c":
                         if "^" in f: 
                             b = int(f[4])
                         else:
                             b = 1
-                    elif f[l-2] == "y" and f[0] == "s":
+                    elif f[l-1] == "y" and f[0] == "s":
                         if "^" in f: 
                             c = int(f[4])
                         else:
                             c = 1
-                    elif f[l-2] == "y" and f[0] == "c":
+                    elif f[l-1] == "y" and f[0] == "c":
                         if "^" in f: 
                             d = int(f[4])
                         else:
@@ -235,16 +237,17 @@ def parse(msg):
                 for i in range(maxdeg,deg):
                     monomi[i+1] = []
                 maxdeg = deg
+                if maxdeg > pol_deg:
+                    pol_deg = maxdeg
             monomi[deg].append(m)
-    return monomi
-    
-    #return myPolynomial(dict)
-            
-                    
-   
-    
-                
-
-    #testing
-    for mono in monomi:
-        print(mono)
+    #Trasformo le liste di monomi in comp omogenee e butto via quelle vuote
+    i = 0
+    while i < pol_deg + 1:
+        if len(monomi[i]) > 0:
+            h = HomogComp(monomi[i])
+            monomi[i] = h
+        else:
+            del monomi[i]
+        i = i+1
+    #return monomi
+    return myPolynomial(monomi)
