@@ -42,8 +42,8 @@ class Monomial:
         dy2 = Monomial(-d*self.r,self.a,self.b,c+1,d-1)
         return (dy1,dy2)
 
-    def eval(self,x,y):
-        return self.r*(np.sin(x)**self.a)*(np.cos(x)**self.b)*(np.sin(y)**self.c)*(np.cos(y)**self.d)
+    def eval(self,x,y,shift):
+        return self.r*(np.sin(x+shift)**self.a)*(np.cos(x+shift)**self.b)*(np.sin(y+shift)**self.c)*(np.cos(y+shift)**self.d)
 
 class HomogComp:
     #CONSTRUCTOR
@@ -108,10 +108,10 @@ class HomogComp:
         dy = HomogComp(l)
         return dy
 
-    def eval(self,x,y):
+    def eval(self,x,y,shift):
         value = 0
         for m in self.monomials:
-            value += m.eval(x,y)
+            value += m.eval(x,y,shift)
         return value
     
 class myPolynomial:
@@ -178,10 +178,11 @@ class myPolynomial:
     def gradient(self):
         return (self.dx(),self.dy())
 
-    def eval(self,x,y):
+    #Shift parameter is to deal with situations in which the critical points of f1,f2 coincide  
+    def eval(self,x,y, shift = 0):
         value = 0
         for k in self.comps.keys():
-            value += self.comps[k].eval(x,y)
+            value += self.comps[k].eval(x,y,shift)
         return value
 
 

@@ -45,7 +45,7 @@ class Torus(Variety):
 def main():
     #Ho cancellato alcune prove che non servono più
     #testing
-    t = 1 
+    t = 6 
    
     if t == 0:
         #Basta di plottare palle! Testing della classe myPlotter
@@ -65,13 +65,12 @@ def main():
     elif t == 1:
         #testing parser di myPolynomial
         msg1 = "(senx)(cos^3y)+8+seny"
-        msg2 = "4+(sen^2x)*(cos^2y)"
+        msg2 = "4+(sen^2x)(cos^2y)"
         msg_errore = "4(seny)(cosx)"
         print(parse(msg1))
         print(parse(msg2))
         print(parse(msg_errore))
-        
-
+        #FUNZIONA :))
 
     elif t == 3:
         #testing la classe Torus
@@ -115,7 +114,7 @@ def main():
 
         #fin qua funziona tutto come dovrebbe :)
 
-    if t == 5:
+    elif t == 5:
         #testing della classe Pareto
         #creo dei polinomi stupidi
         monomio11 = Monomial(1,0,1,0,0) #cosx
@@ -128,6 +127,24 @@ def main():
 
         pareto = EPG(50,100,f1,f2)
         pareto.crit()
+
+    elif t == 6:
+    #continuo a testare la classe Pareto ma stavolta ho il parser
+    #Ho anche aggiunto un parametro shift alle funzioni di "eval" e al costruttore di EPG
+    #in modo di poter spostare leggermente le funzioni per avere punti critici di f1,f2 disgiunti
+    
+    #Utilizzo i polinomi di Grazia
+        g1 = parse("2(cos^2x) + 4(cosy)")
+        g2 = parse("sen^3x+3sen^2y")
+
+        #testing dei polinomi shiftati
+        print(g1.eval(0,0))
+        shift = np.pi/4
+        print(g1.eval(0,0,shift))
+
+        pareto = EPG(50,100,g1,g2,shiftf1=shift)
+        pareto.crit()
+
 
         
     plt.show()
