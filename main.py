@@ -134,16 +134,18 @@ def main():
     #in modo di poter spostare leggermente le funzioni per avere punti critici di f1,f2 disgiunti
     
     #Utilizzo i polinomi di Grazia
-        g1 = parse("2(cos^2x) + 4(cosy)")
-        g2 = parse("sen^3x+3sen^2y")
+        g1 = parse("2(cos^2x)+4(cosy)")
+        g2 = parse("sen^3x+3(sen^2y)")
 
-        #testing dei polinomi shiftati
+        #testing dei polinomi shiftati --> direi che funzionano
         print(g1.eval(0,0))
-        shift = np.pi/4
+        shift = np.pi/12
         print(g1.eval(0,0,shift))
+        
+        pareto = EPG(200,100,1,g1,g2)
 
-        pareto = EPG(50,100,g1,g2,shiftf1=shift)
-        pareto.crit()
+
+        pareto.calc()
 
 
         

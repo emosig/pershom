@@ -1,0 +1,8 @@
+Come scrivere i polinomi in modo da essere correttamente leti dalla funzione 
+parse():
+
+Si devono scrivere senza spazi, senza * per indicare il prodotto, separando 
+con parentesi ogni fattore quando ci siano dei monomi con più di un fattore.
+Se r,a,b,c,d sono i valori (int) dell'input il modo corretto di scrivere
+un generale monomio sarebbe:
+r(cos^ax)(sen^bx)(cos^cx)(sen^dx)

@@ -73,7 +73,7 @@ class HomogComp:
                 if coeffs[1] != 0:
                     if coeffs[1] == 1:
                         coeffs[1] = ''
-                    strlist.append('sin^' + str(coeffs[1]) + 'x ')
+                    strlist.append('sen^' + str(coeffs[1]) + 'x ')
                 if coeffs[2] != 0:
                     if coeffs[2] == 1:
                         coeffs[2] = ''
@@ -81,7 +81,7 @@ class HomogComp:
                 if coeffs[3] != 0:
                     if coeffs[3] == 1:
                         coeffs[3] = ''
-                    strlist.append('sin^' + str(coeffs[3]) + 'y ')
+                    strlist.append('sen^' + str(coeffs[3]) + 'y ')
                 if coeffs[4] != 0:
                     if coeffs[4] == 1:
                         coeffs[4] = ''
@@ -138,7 +138,7 @@ class myPolynomial:
                     if coeffs[1] != 0:
                         if coeffs[1] == 1:
                             coeffs[1] = ''
-                        strlist.append('sin^' + str(coeffs[1]) + 'x ')
+                        strlist.append('sen^' + str(coeffs[1]) + 'x ')
                     if coeffs[2] != 0:
                         if coeffs[2] == 1:
                             coeffs[2] = ''
@@ -146,7 +146,7 @@ class myPolynomial:
                     if coeffs[3] != 0:
                         if coeffs[3] == 1:
                             coeffs[3] = ''
-                        strlist.append('sin^' + str(coeffs[3]) + 'y ')
+                        strlist.append('sen^' + str(coeffs[3]) + 'y ')
                     if coeffs[4] != 0:
                         if coeffs[4] == 1:
                             coeffs[4] = ''
