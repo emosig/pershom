@@ -45,7 +45,7 @@ class Torus(Variety):
 def main():
     #Ho cancellato alcune prove che non servono più
     #testing
-    t = 6 
+    t = 7 
    
     if t == 0:
         #Basta di plottare palle! Testing della classe myPlotter
@@ -142,12 +142,21 @@ def main():
         shift = np.pi/12
         print(g1.eval(0,0,shift))
         
-        pareto = EPG(200,100,1,g1,g2)
-
+        pareto = EPG(200,100,1.2,g1,g2)
 
         pareto.calc()
 
-
+    elif t == 7:
+        #Proviamo funzioni più semplici?
+        f1 = parse("cosx+cosy")
+        f2 = parse("senx+seny")
+        print(f1)
+        print(f2)
+        print(f1.gradient()[0])
+        print(f2.gradient()[0])
+        pareto = EPG(200,1,1,f1,f2)
+        pareto.calc()
+        
         
     plt.show()
         

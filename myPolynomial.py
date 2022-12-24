@@ -136,21 +136,29 @@ class myPolynomial:
                     if coeffs[0] != 1:
                         strlist.append(str(coeffs[0]))
                     if coeffs[1] != 0:
+                        pezzo = 'sen^'
                         if coeffs[1] == 1:
                             coeffs[1] = ''
-                        strlist.append('sen^' + str(coeffs[1]) + 'x ')
+                            pezzo = pezzo[:-1]
+                        strlist.append(pezzo + str(coeffs[1]) + 'x ')
                     if coeffs[2] != 0:
+                        pezzo = 'cos^'
                         if coeffs[2] == 1:
                             coeffs[2] = ''
-                        strlist.append('cos^' + str(coeffs[2]) + 'x ')
+                            pezzo = pezzo[:-1]
+                        strlist.append(pezzo + str(coeffs[2]) + 'x ')
                     if coeffs[3] != 0:
+                        pezzo = 'sen^'
                         if coeffs[3] == 1:
                             coeffs[3] = ''
-                        strlist.append('sen^' + str(coeffs[3]) + 'y ')
+                            pezzo = pezzo[:-1]
+                        strlist.append(pezzo + str(coeffs[3]) + 'y ')
                     if coeffs[4] != 0:
+                        pezzo = 'cos^'
                         if coeffs[4] == 1:
                             coeffs[4] = ''
-                        strlist.append('cos^' + str(coeffs[4]) + 'y ')
+                            pezzo = pezzo[:-1]
+                        strlist.append(pezzo + str(coeffs[4]) + 'y ')
                     strlist.append('+ ')
                     p += str().join(strlist)
         return p.removesuffix('+ ')
@@ -185,8 +193,6 @@ class myPolynomial:
             value += self.comps[k].eval(x,y,shift)
         return value
 
-
-#¿Non sarebbe bello avere una funzione che dato un input di testo costruisce un polinomio?
 #Per ora con parentese e senza spazi
 def parse(msg):
     monomi = {0:[]}
@@ -235,7 +241,7 @@ def parse(msg):
             deg = m.get_degree()
             if maxdeg < deg:
                 #Inizializzo comp omogenee in tutti i gradi minori del massimo just in case
-                for i in range(maxdeg,deg):
+                for i in range(pol_deg,deg):
                     monomi[i+1] = []
                 maxdeg = deg
                 if maxdeg > pol_deg:

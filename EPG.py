@@ -2,9 +2,11 @@
 
 from myPolynomial import *
 from myPlotter import *
+from scipy import signal
 
-#Variabile per salvare i punti critici in un file
+#Variabile che utilizzo per testare roba
 TEST_IN_FILE = False
+TEST_A_FEW_PLOTS = False
 
 class EPG:
     #Adatto il codice di Grazia
@@ -131,11 +133,29 @@ class EPG:
         self.eval_paretocrit()
 
         #plotting
-        plt.scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
-        plt.scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
-        plt.scatter(self.f1paretocrit, self.f2paretocrit, s=0.3, alpha = 0.3, color='green')
-        title = "Punti considerati = {}. Tolleranze = ({},{}). Shift in f1 di {}"
-        plt.title(title.format(self.torus_grid_len, self.crit_precision, self.pcrit_precision, self.shiftf1))
+        if TEST_A_FEW_PLOTS:
+            #Definisco 2 plots
+            fig, axs = plt.subplots(2, 1)
+            #Main plot
+            axs[0].scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
+            axs[0].scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
+            axs[0].scatter(self.f1paretocrit, self.f2paretocrit, s=0.3, alpha = 0.3, color='green')
+            #Savitzky-Golay filter
+            yfilt = signal.savgol_filter(self.f2paretocrit, window_length=31, polyorder=3, mode="nearest")
+            axs[1].scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
+            axs[1].scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
+            axs[1].scatter(self.f1paretocrit, yfilt, s=0.3, alpha = 0.3, color='green')
+
+            #Per ora questo stronzo non funziona >:(
+
+
+        else:
+            plt.scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
+            plt.scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
+            plt.scatter(self.f1paretocrit, self.f2paretocrit, s=0.3, alpha = 0.3, color='green')
+            title = "Punti considerati = {}. Tolleranze = ({},{}). Shift in f1 di {}"
+            plt.title(title.format(self.torus_grid_len, self.crit_precision, self.pcrit_precision, self.shiftf1))
+            
         plt.show()
 
         if TEST_IN_FILE:
