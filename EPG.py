@@ -7,6 +7,12 @@ from scipy import signal
 #Variabile che utilizzo per testare roba
 TEST_IN_FILE = False
 TEST_A_FEW_PLOTS = False
+ANTIALIASING = False
+
+#Metodo ausiliare per dividere una matrice in blocchi
+def split_matrix(arr, n):
+        r,h = arr.shape
+        return (arr.reshape(h//n, n, -1, n).swapaxes(1, 2).reshape(-1, n, n))
 
 class EPG:
     #Adatto il codice di Grazia
@@ -37,6 +43,9 @@ class EPG:
         self.torus_grid = x
         self.torus_grid_len = len(x)
 
+        #Testing. Forse torus_grid, torus_grid_len non servono più
+        self.torus_matrix = x.reshape((p1+1,p1+1,2))
+
         #Liste di pti critici in senso classico
         self.critf1 = []
         self.critf2 = []
@@ -49,8 +58,6 @@ class EPG:
         self.f2critf2 = []
         self.f1paretocrit = []
         self.f2paretocrit = []
-        
-        self.EPG = []
 
     #GETTERS
     def get_torus_coords(self):
@@ -80,6 +87,40 @@ class EPG:
             self.f1paretocrit.append(self.f1.eval(c[0],c[1],self.shiftf1))
             self.f2paretocrit.append(self.f2.eval(c[0],c[1],self.shiftf2))
 
+    def plot(self):
+        plt.scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
+        plt.scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
+        plt.scatter(self.f1paretocrit, self.f2paretocrit, s=0.3, alpha = 0.3, color='green')
+        title = "Punti considerati = {}. Tolleranze = ({},{}). Shift in f1 di {}"
+        plt.title(title.format(self.torus_grid_len, self.crit_precision, self.pcrit_precision, self.shiftf1))
+
+    #Questa serve per testare diversi parametri in una sola volta
+    def plot_various(self):
+        #Definisco 2 plots
+        fig, axs = plt.subplots(2, 1)
+        #Main plot
+        axs[0].scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
+        axs[0].scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
+        axs[0].scatter(self.f1paretocrit, self.f2paretocrit, s=0.3, alpha = 0.3, color='green')
+        #Savitzky-Golay filter
+        yfilt = signal.savgol_filter(self.f2paretocrit, window_length=31, polyorder=3, mode="nearest")
+        axs[1].scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
+        axs[1].scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
+        axs[1].scatter(self.f1paretocrit, yfilt, s=0.3, alpha = 0.3, color='green')
+
+        #Per ora questo stronzo non funziona >:(
+
+    #Procedura di antialising.
+    def antialising(self, n):
+        X = self.torus_matrix[0]
+        Y = self.torus_matrix[1]
+        Xblocks = split_matrix(X,n)     #Questi sono array di sottomatrici
+        Yblocks = split_matrix(Y,n)
+
+        occhio = self.torus_grid.reshape((self.torus_precision+1,self.torus_precision+1,2))
+        print(occhio)
+
+
     def calc(self):
         #calcolo dei punti critici di f_1 e f_2 e i punti pareto-critici
         eps = 1/self.crit_precision
@@ -87,40 +128,41 @@ class EPG:
         cr1=[]  #lista dei punti critici di f_1
         cr2=[]  #lista dei punti critici di f_2
         pcr=[]  #lista dei punti pareto-critici
-        for i in range (0,self.torus_grid_len,1):
-            pos = self.torus_grid[i]
+        
+        for i in range (0,self.torus_precision+1,1):
+            for j in range (0,self.torus_precision+1,1):
+                pos = self.torus_matrix[i][j]
             
-            #(a0,a1),(b0,b1) sono i gradienti di f1, f2 rispettivamente calcolati nel punto pos della griglia
-            a0,a1 = self.grf1[0].eval(pos[0],pos[1],self.shiftf1),self.grf1[1].eval(pos[0],pos[1],self.shiftf1)
-            b0,b1 = self.grf2[0].eval(pos[0],pos[1],self.shiftf2),self.grf2[1].eval(pos[0],pos[1],self.shiftf2)
-            
-            #Controllo se il punto pos è critico per f1
-            if -eps < a0 and a0 < eps and -eps < a1 and a1 < eps:
-                cr1.append(pos)
-            if -eps < b0 and b0 < eps and -eps < b1 and b1 < eps:
-                cr2.append(pos)
+                #(a0,a1),(b0,b1) sono i gradienti di f1, f2 rispettivamente calcolati nel punto pos della griglia
+                a0,a1 = self.grf1[0].eval(pos[0],pos[1],self.shiftf1),self.grf1[1].eval(pos[0],pos[1],self.shiftf1)
+                b0,b1 = self.grf2[0].eval(pos[0],pos[1],self.shiftf2),self.grf2[1].eval(pos[0],pos[1],self.shiftf2)
+                
+                #Controllo se il punto pos è critico per f1
+                if -eps < a0 and a0 < eps and -eps < a1 and a1 < eps:
+                    cr1.append(pos)
+                if -eps < b0 and b0 < eps and -eps < b1 and b1 < eps:
+                    cr2.append(pos)
 
-            #Controllo se il punto pos è pareto-critico
-            if a0 == 0 and a1 != 0:     
-                if abs(b0) < peps and b1/a1 < peps:
-                    pcr.append(pos)
-            if a1 == 0 and a0 != 0:
-                if abs(b1) < peps and b0/a0 < peps:
-                    pcr.append(pos)
-            if b0 == 0 and b1 != 0:
-                if abs(a0) < peps and a1/b1 < peps:
-                    pcr.append(pos)
-            if b1 == 0 and b0 != 0:
-                if abs(a1) < peps and a0/b0 < peps:
-                    pcr.append(pos)
-            if b0 != 0 and b1 != 0:
-                if abs(a0/b0-a1/b1) < peps and (a0/b0 < peps or a1/b1 < eps):
-                    pcr.append(pos)
-            #Grazia non aggiunge questo ultimo if. ¿Perché?
-            if a0 != 0 and a1 != 0:
-                if abs(b0/a0-b1/a1) < peps and (b0/a0 < peps or b1/a1 < eps):
-                    pcr.append(pos)
-            
+                #Controllo se il punto pos è pareto-critico
+                if a0 == 0 and a1 != 0:     
+                    if abs(b0) < peps and b1/a1 < peps:
+                        pcr.append(pos)
+                if a1 == 0 and a0 != 0:
+                    if abs(b1) < peps and b0/a0 < peps:
+                        pcr.append(pos)
+                if b0 == 0 and b1 != 0:
+                    if abs(a0) < peps and a1/b1 < peps:
+                        pcr.append(pos)
+                if b1 == 0 and b0 != 0:
+                    if abs(a1) < peps and a0/b0 < peps:
+                        pcr.append(pos)
+                if b0 != 0 and b1 != 0:
+                    if abs(a0/b0-a1/b1) < peps and (a0/b0 < peps or a1/b1 < eps):
+                        pcr.append(pos)
+                #Grazia non aggiunge questo ultimo if. ¿Perché?
+                if a0 != 0 and a1 != 0:
+                    if abs(b0/a0-b1/a1) < peps and (b0/a0 < peps or b1/a1 < eps):
+                        pcr.append(pos)
 
         #Salvo i punti critici e paretocritici che ho appena calcolato
         self.critf1=np.array(cr1)
@@ -132,30 +174,18 @@ class EPG:
         self.eval_crit2()
         self.eval_paretocrit()
 
+        if ANTIALIASING:
+            self.antialising(5)
+        #Ritorno le liste di punti critici per risparmiare calcoli
+        return cr1,cr2
+
+    def run(self):
+        cr1,cr2 = self.calc()
         #plotting
         if TEST_A_FEW_PLOTS:
-            #Definisco 2 plots
-            fig, axs = plt.subplots(2, 1)
-            #Main plot
-            axs[0].scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
-            axs[0].scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
-            axs[0].scatter(self.f1paretocrit, self.f2paretocrit, s=0.3, alpha = 0.3, color='green')
-            #Savitzky-Golay filter
-            yfilt = signal.savgol_filter(self.f2paretocrit, window_length=31, polyorder=3, mode="nearest")
-            axs[1].scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
-            axs[1].scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
-            axs[1].scatter(self.f1paretocrit, yfilt, s=0.3, alpha = 0.3, color='green')
-
-            #Per ora questo stronzo non funziona >:(
-
-
+            self.plot_various()
         else:
-            plt.scatter(self.f1critf1, self.f2critf1, alpha = 0.5, color='black')
-            plt.scatter(self.f1critf2, self.f2critf2, alpha = 0.5, color='black')
-            plt.scatter(self.f1paretocrit, self.f2paretocrit, s=0.3, alpha = 0.3, color='green')
-            title = "Punti considerati = {}. Tolleranze = ({},{}). Shift in f1 di {}"
-            plt.title(title.format(self.torus_grid_len, self.crit_precision, self.pcrit_precision, self.shiftf1))
-            
+            self.plot()  
         plt.show()
 
         if TEST_IN_FILE:
@@ -167,7 +197,3 @@ class EPG:
             for crit in cr2:
                 doc.write(str(crit)+'\n')
             doc.close()
-
-
-    def EPG(self):
-        pass

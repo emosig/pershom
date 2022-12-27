@@ -8,47 +8,12 @@ from myPlotter import *
 from myPolynomial import *
 from EPG import *
 
-#M -> R^2, M toro or sfera
-class Variety:
-    pass
-
-class S2(Variety):
-    def __init__(self):
-        pass
-
-class Torus(Variety):
-    #[0,2pi]x[0,2pi] con le relazioni quozienti del toro
-
-    #CONSTRUCTOR
-    def __init__(self, precision):
-        #il più grande sia il valore di precision più punti del toro considero
-        self.precision = precision
-        eps = 1/precision
-
-        #Questo salva un array di coordinate x e un array di coordinate y di punti del toro
-        self.point_coords = np.mgrid[0:2*np.pi:eps, 0:2*np.pi:eps]
-
-    #GETTERS
-    def get_point_coords(self):
-        return self.point_coords
-
-    def get_point_array(self):
-        #Ritorna un array di coordinate invece che due array
-        c = []
-        for x in self.point_coords[0]:
-            for y in self.point_coords[1]:
-                c.append([x,y])
-        return c
-
-
-
 def main():
-    #Ho cancellato alcune prove che non servono più
-    #testing
+    #parametro di testing
     t = 7 
    
     if t == 0:
-        #Basta di plottare palle! Testing della classe myPlotter
+        #Testing della classe myPlotter
 
         #Con questi dati lui fa una cosa orribile
         x = [2.50, -1.23, 4.02, 3.25, -5.00, 4.40]
@@ -73,9 +38,7 @@ def main():
         #FUNZIONA :))
 
     elif t == 3:
-        #testing la classe Torus
-        t = Torus(5)
-        print(t.get_point_array())
+        pass
 
     elif t == 4:
         monomio0 = Monomial(7,0,0,0,0) #7
@@ -144,22 +107,22 @@ def main():
         
         pareto = EPG(200,100,1.2,g1,g2)
 
-        pareto.calc()
+        pareto.run()
 
     elif t == 7:
         #Proviamo funzioni più semplici?
         f1 = parse("cosx+cosy")
         f2 = parse("senx+seny")
-        print(f1)
-        print(f2)
-        print(f1.gradient()[0])
-        print(f2.gradient()[0])
-        pareto = EPG(200,1,1,f1,f2)
-        pareto.calc()
-        
-        
-    plt.show()
-        
+
+        h1 = parse("(cosx)(siny)")
+        h2 = parse("(senx)(cosy)+cosy")
+        print(h1)
+        print(h2)
+        print(h1.gradient()[0])
+        print(h2.gradient()[0])
+
+        pareto = EPG(100,100,10,h1,h2)
+        pareto.run()
         
 if __name__ == "__main__":
     main()
