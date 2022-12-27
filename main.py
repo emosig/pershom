@@ -111,6 +111,7 @@ def main():
 
     elif t == 7:
         #Proviamo funzioni più semplici?
+        #Testing antialiasing
         f1 = parse("cosx+cosy")
         f2 = parse("senx+seny")
 
@@ -121,7 +122,7 @@ def main():
         print(h1.gradient()[0])
         print(h2.gradient()[0])
 
-        pareto = EPG(100,100,10,h1,h2)
+        pareto = EPG(100,100,50,f1,f2, block_size = 4)
         pareto.run()
         
 if __name__ == "__main__":
