@@ -10,7 +10,7 @@ from EPG import *
 
 def main():
     #parametro di testing
-    t = 7 
+    t = 2 
    
     if t == 0:
         #Testing della classe myPlotter
@@ -36,6 +36,20 @@ def main():
         print(parse(msg2))
         print(parse(msg_errore))
         #FUNZIONA :))
+
+    elif t == 2:
+        #Testing della funzione che mi ha chiesto Grazia
+        f = "4(senx)(cosy)"
+        g = "cos^3x+(seny)(cos^2y)+7"
+        dict_fx,dict_fy = string_to_gradient(g)
+        
+        #Testing
+        for k in dict_fx:
+            print("Coeffs in grado {}:".format(k))
+            for mono in dict_fx[k].get_monomials():
+                r,a,b,c,d = mono.get_coeffs()
+                print("Monomio r={} a={} b={} c={} d={}".format(r,a,b,c,d))
+
 
     elif t == 3:
         pass

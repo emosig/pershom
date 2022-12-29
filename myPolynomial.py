@@ -123,6 +123,10 @@ class myPolynomial:
     def __init__(self, h):
         self.comps = h
 
+    #GETTERS
+    def get_dict(self):
+        return self.comps
+
     #OTHER
     #per printare il polinomio in modo comodo
     def __str__(self):
@@ -258,3 +262,10 @@ def parse(msg):
         i = i+1
     #return monomi
     return myPolynomial(monomi)
+
+#Funzione che mi ha chiesto Grazia
+#Da una string ritornano una coppia di dizionari con i coefficienti delle rispettive derivate
+def string_to_gradient(msg):
+    f = parse(msg)
+    fx,fy = f.gradient()
+    return (fx.get_dict(),fy.get_dict())
