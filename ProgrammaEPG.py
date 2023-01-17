@@ -64,31 +64,35 @@ def Pareto(f_1,f_2,p1,p2,p3,metodo):
     ppc=np.array(ppc)
     cr1=np.array(cr1)
     cr2=np.array(cr2)
-    return ppc,cr1,cr2
+    return ppc,cr1,cr2,x
 
-def EPG(f_1,f_2,p1,p2,p3,p4,metodo):  #gli argomenti sono ourPolynomial
-    ppc,cr1,cr2=Pareto(f_1,f_2,p1,p2,p3,p4,metodo)
+#def Pareto_noise(ppc,x):
+
+def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
+    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3,metodo)
     m='nd.gradient'
-    if metodo==1:
+    if metodo==True:
         m='gradient'
-        fig,axes=plt.subplots(1,3)
-        fig.set_size_inches(20,4)
+        fig,axes=plt.subplots(1,4)
+        fig.set_size_inches(28,4)
         axes[0].scatter([p[0] for p in cr1],[p[1] for p in cr1],s=0.5)
         axes[0].set_title('Pt crit di f_1, '+m+', tolleranza:'+str(p2)+', griglia di'+str(p1*p1)+'punti)')
-        axes[1].scatter([p[1] for p in cr2],[p[1] for p in cr2],s=0.5)
+        axes[1].scatter([p[0] for p in cr2],[p[1] for p in cr2],s=0.5)
         axes[1].set_title('Pt crit di f_2, '+m+', tolleranza:'+str(p2)+', griglia di'+str(p1*p1)+'punti)')
         axes[2].scatter([f_1.eval(p[0],p[1]) for p in ppc],[f_2.eval(p[0],p[1]) for p in ppc],s=0.2)
-        axes[2].set_title('Extended Pareto Grid, '+m+', tolleranza:'+str(p3)+','+str(p4)+', griglia di'+str(p1*p1)+'punti)')
+        axes[2].set_title('Extended Pareto Grid, '+m+', tolleranza:'+str(p3)+', griglia di'+str(p1*p1)+'punti)')
+        axes[3].scatter([p[0] for p in ppc],[p[1] for p in ppc],s=0.2)
+        axes[3].set_title('Punti Pareto Critici, '+m+', tolleranza:'+str(p3)+', griglia di'+str(p1*p1)+'punti)')
     else:
-        fig,axes=plt.subplots(1,3)
-        fig.set_size_inches(20,4)
+        fig,axes=plt.subplots(1,4)
+        fig.set_size_inches(28,4)
         axes[0].scatter([p[0] for p in cr1],[p[1] for p in cr1],s=0.5)
         axes[0].set_title('Pt crit di f_1, '+m+', tolleranza:'+str(p2)+', griglia di'+str(p1*p1)+'punti)')
-        axes[1].scatter([p[1] for p in cr2],[p[1] for p in cr2],s=0.5)
+        axes[1].scatter([p[0] for p in cr2],[p[1] for p in cr2],s=0.5)
         axes[1].set_title('Pt crit di f_2, '+m+', tolleranza:'+str(p2)+', griglia di'+str(p1*p1)+'punti)')
         axes[2].scatter([f_1(p) for p in ppc],[f_2(p) for p in ppc],s=0.2)
-        axes[2].set_title('Extended Pareto Grid, '+m+', tolleranza:'+str(p3)+','+str(p4)+', griglia di'+str(p1*p1)+'punti)')
+        axes[2].set_title('Extended Pareto Grid, '+m+', tolleranza:'+str(p3)+', griglia di'+str(p1*p1)+'punti)')
+        axes[3].scatter([p[0] for p in ppc],[p[1] for p in ppc],s=0.2)
+        axes[3].set_title('Punti Pareto Critici, '+m+', tolleranza:'+str(p3)+', griglia di'+str(p1*p1)+'punti)')
     
     #return fig
-
-
