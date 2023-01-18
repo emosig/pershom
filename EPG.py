@@ -1,6 +1,6 @@
 #Classe che dipinge le EPG
 
-from myPolynomial import *
+from ourPolynomial import *
 from myPlotter import *
 from scipy import signal
 

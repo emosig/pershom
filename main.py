@@ -3,14 +3,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
 
-from myFunction_old import * #DEPRECATED
+#from myFunction_old import * #DEPRECATED
 from myPlotter import *
-from myPolynomial import *
+#from myPolynomial import * #DEPRECATED
+from ourPolynomial import *
 from EPG import *
 
 def main():
     #parametro di testing
-    t = 2 
+    t = 3 
    
     if t == 0:
         #Testing della classe myPlotter
@@ -52,7 +53,11 @@ def main():
 
 
     elif t == 3:
-        pass
+        #testing ourPolynomial
+        f = parse("senx + seny")
+        print(f)
+    
+
 
     elif t == 4:
         monomio0 = Monomial(7,0,0,0,0) #7
