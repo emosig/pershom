@@ -198,7 +198,7 @@ class myPolynomial:
         return value
 
 #Per ora con parentese e senza spazi
-def parse(msg):
+def parse_old(msg):
     monomi = {0:[]}
     #Separo per monomi
     msg = msg.split("+")
@@ -266,6 +266,6 @@ def parse(msg):
 #Funzione che mi ha chiesto Grazia
 #Da una string ritornano una coppia di dizionari con i coefficienti delle rispettive derivate
 def string_to_gradient(msg):
-    f = parse(msg)
+    f = parse_old(msg)
     fx,fy = f.gradient()
     return (fx.get_dict(),fy.get_dict())
