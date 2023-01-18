@@ -45,6 +45,8 @@ class Monomial:
     def eval(self,x,y,shift):
         return self.r*(np.sin(x+shift)**self.a)*(np.cos(x+shift)**self.b)*(np.sin(y+shift)**self.c)*(np.cos(y+shift)**self.d)
 
+### questa era la parte in cui di un monomio calcolo le derivate risp a x e a y (dx1 e dx2 andranno sommati, idem per dy1 e dy2) ###
+
 class HomogComp:
     #CONSTRUCTOR
     #m è una lista non vuota di Monomial
@@ -87,8 +89,8 @@ class HomogComp:
                         coeffs[4] = ''
                     strlist.append('cos^' + str(coeffs[4]) + 'y ')
                 strlist.append('+ ')
-                p += str().join(strlist)
-        return p.removesuffix('+ ')
+                p += str().join(strlist)  #concateno a p come stringa il contenuto di strlist
+        return p.removesuffix('+ ')       #toglie il + alla fine lasciato dall'ultima iterazione
 
     def dx(self):
         l = []      #lista di Monomial di grado k-1
@@ -206,7 +208,7 @@ def parse(msg):
     for mono in msg:
         maxdeg = 0
         if len(mono) == 1:
-            #È un termine indipendente
+            #È un termine di grado 0
             monomi[0].append(Monomial((int(mono)),0,0,0,0))
         else:
             #Separo il monomio in fattori
