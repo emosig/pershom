@@ -6,7 +6,68 @@ import numdifftools as nd
 from ourPolynomial import *
 
 #definisco la funzione che calcola i punti critici e i punti pareto critici, gli do in input già i gradienti e dentro EPG decido come calcolarli
-def Pareto(f_1,f_2,p1,p2,p3,metodo):
+def Pareto(f_1,f_2,p1,p2,p3):
+    #costruisco una griglia di p1*p1 punti sul toro [0,2pi]x[0,2pi]
+    eps=2*np.pi/p1
+    x=[]
+    for i in np.arange(0,2*np.pi+eps,eps):
+        for j in np.arange(0,2*np.pi+eps,eps):
+            x.append([i,j])
+    x=np.array(x)
+    l=len(x)
+    
+    #p2=precisione per il calcolo dei punti critici
+    #p3=precisione per il calcolo dei punti Pareto critici
+    #forse non ha senso meterne 3
+
+    ppc=[]  #lista dei punti Pareto Critici
+    cr1=[]  #lista dei punti critici per f_1
+    cr2=[]  #lista dei punti critici per f_2
+    det=[]  #lista dei determinanti
+    
+    grf_1=f_1.gradient()
+    grf_2=f_2.gradient()
+
+    for i in range (0,l,1):
+        a=[grf_1[0].eval(x[i][0],x[i][1]),grf_1[1].eval(x[i][0],x[i][1])]
+        b=[grf_2[0].eval(x[i][0],x[i][1]),grf_2[1].eval(x[i][0],x[i][1])]
+        
+        if abs(a[0])<=p2 and abs(a[1])<=p2:       #punto critico per f_1
+            cr1.append(x[i])
+        if abs(b[0])<=p2 and abs(b[1])<=p2:       #punto critico per f_2
+            cr2.append(x[i])
+        
+        det[i]=a[0]*b[1]-a[1]*b[0]
+        
+        if abs(a[0])<=p3 and abs(a[1])<=p3 and abs(det[i])<=p3:       #se ho un punto critico per f_1 la condizione è verificata per qualunque valore del gradiente di f_2
+            ppc.append(x[i])
+        if abs(b[0])<=p3 and abs(b[1])<=p3 and abs(det[i])<=p3:       #se ho un punto critico per f_2 la condizione è verificata per qualunque valore del gradiente di f_1
+            ppc.append(x[i])
+
+        if abs(a[0])<=p3 and abs(a[1])>p3 and abs(det[i])<=p3:     
+            if b[1]/a[1]<=p3:
+                ppc.append(x[i])
+        if abs(a[1])<=p3 and abs(a[0])>p3 and abs(det[i])<=p3:
+            if b[0]/a[0]<=p3:
+                ppc.append(x[i])
+        if abs(b[0])<=p3 and abs(b[1])>p3 and abs(det[i])<=p3:
+            if a[1]/b[1]<=p3:
+                ppc.append(x[i])
+        if abs(b[1])<=p3 and abs(b[0])>p3 and abs(det[i])<=p3:
+            if a[0]/b[0]<=p3:
+                ppc.append(x[i])
+        if abs(b[0])>p3 and abs(b[1])>p3 and abs(det[i])<=p3:
+            if a[0]/b[0]<=p3 or a[1]/b[1]<=p3:
+                ppc.append(x[i])
+        if abs(a[0])>p3 and abs(a[1])>p3 and abs(det[i])<=p3:
+            if b[0]/a[0]<=p3 or b[1]/a[1]<=p3:
+                ppc.append(x[i])
+    ppc=np.array(ppc)
+    cr1=np.array(cr1)
+    cr2=np.array(cr2)
+    return ppc,cr1,cr2,x
+
+def Pareto2(f_1,f_2,p1,p2,p3,metodo):
     #costruisco una griglia di p1*p1 punti sul toro [0,2pi]x[0,2pi]
     eps=2*np.pi/p1
     x=[]
