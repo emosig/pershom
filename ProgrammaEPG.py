@@ -37,7 +37,7 @@ def Pareto(f_1,f_2,p1,p2,p3):
         if abs(b[0])<=p2 and abs(b[1])<=p2:       #punto critico per f_2
             cr2.append(x[i])
         
-        det[i]=a[0]*b[1]-a[1]*b[0]
+        det.append(a[0]*b[1]-a[1]*b[0])
         
         if abs(a[0])<=p3 and abs(a[1])<=p3 and abs(det[i])<=p3:       #se ho un punto critico per f_1 la condizione è verificata per qualunque valore del gradiente di f_2
             ppc.append(x[i])
@@ -130,7 +130,7 @@ def Pareto2(f_1,f_2,p1,p2,p3,metodo):
 #def Pareto_noise(ppc,x):
 
 def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
-    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3,metodo)
+    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3)
     m='nd.gradient'
     if metodo==True:
         m='gradient'
