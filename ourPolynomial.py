@@ -87,7 +87,7 @@ class ourPolynomial:
     
     """per printare il polinomio in modo comodo
     trasformiamo ogni monomio in string e poi sommiamo il tutto in un'unica stringa"""
-    def __str__(self):
+    def stringa(self):
         f = ''
         L=self.monomials
         for mono in L:                     #c è una lista di 13 numeri (1 coeff direttore[0], 4 esponenti[1,2,3,4], 4 schift[5,6,7,8], 4 moltiplicatori[9,10,11,12])
@@ -108,35 +108,35 @@ class ourPolynomial:
                     return 'ERRORE DI SINTASSI'
                 if c[9]==1:
                     if c[5]>0:
-                        f+=('cos(x+'+str(c[5])+')')
+                        f+='cos(x+'+str(c[5])+')'
                     if c[5]==0:
                         f+='cos(x)'
                     if c[5]<0:
-                        f+=('cos(x'+str(c[5])+')')
+                        f+='cos(x'+str(c[5])+')'
                 else:
                     if c[5]>0:
-                        f+=('cos('+str(c[9])+'x+'+str(c[5])+')')
+                        f+='cos('+str(c[9])+'x+'+str(c[5])+')'
                     if c[5]==0:
                         f+='cos('+str(c[9])+'x)'
                     if c[5]<0:
-                        f+=('cos('+str(c[9])+'x'+str(c[5])+')')
+                        f+='cos('+str(c[9])+'x'+str(c[5])+')'
             if c[1]>1:
                 if c[9]==0:
                     return 'ERRORE DI SINTASSI'
                 if c[9]==1:
                     if c[5]>0:
-                        f+=('cos^'+ str(c[1])+'(x+'+str(c[5])+')')
+                        f+='cos^'+ str(c[1])+'(x+'+str(c[5])+')'
                     if c[5]==0:
                         f+='cos^'+ str(c[1])+'(x)'
                     if c[5]<0:
-                        f+=('cos^'+ str(c[1])+'(x'+str(c[5])+')')
+                        f+='cos^'+ str(c[1])+'(x'+str(c[5])+')'
                 else:
                     if c[5]>0:
-                        f+=('cos^'+ str(c[1])+'('+str(c[9])+'x+'+str(c[5])+')')
+                        f+='cos^'+ str(c[1])+'('+str(c[9])+'x+'+str(c[5])+')'
                     if c[5]==0:
                         f+='cos^'+ str(c[1])+'('+str(c[9])+'x)'
                     if c[5]<0:
-                        f+=('cos^'+ str(c[1])+'('+str(c[9])+'x'+str(c[5])+')')
+                        f+='cos^'+ str(c[1])+'('+str(c[9])+'x'+str(c[5])+')'
             if c[1]<0:
                 return 'ERRORE DI SINTASSI'
 
@@ -145,35 +145,35 @@ class ourPolynomial:
                     return 'ERRORE DI SINTASSI'
                 if c[10]==1:
                     if c[6]>0:
-                        f+=('sin(x+'+str(c[6])+')')
+                        f+='sin(x+'+str(c[6])+')'
                     if c[6]==0:
                         f+='sin(x)'
                     if c[6]<0:
-                        f+=('sin(x'+str(c[6])+')')
+                        f+='sin(x'+str(c[6])+')'
                 else:
                     if c[6]>0:
-                        f+=('sin('+str(c[10])+'x+'+str(c[6])+')')
+                        f+='sin('+str(c[10])+'x+'+str(c[6])+')'
                     if c[6]==0:
                         f+='sin('+str(c[10])+'x)'
                     if c[6]<0:
-                        f+=('sin('+str(c[10])+'x'+str(c[6])+')')
+                        f+='sin('+str(c[10])+'x'+str(c[6])+')'
             if c[2]>1:
                 if c[10]==0:
                     return 'ERRORE DI SINTASSI'
                 if c[10]==1:
                     if c[5]>0:
-                        f+=('sin^'+ str(c[2])+'(x+'+str(c[6])+')')
+                        f+='sin^'+ str(c[2])+'(x+'+str(c[6])+')'
                     if c[5]==0:
                         f+='sin^'+ str(c[2])+'(x)'
                     if c[5]<0:
-                        f+=('sin^'+ str(c[2])+'(x'+str(c[6])+')')
+                        f+='sin^'+ str(c[2])+'(x'+str(c[6])+')'
                 else:
                     if c[5]>0:
-                        f+=('sin^'+ str(c[2])+'('+str(c[10])+'x+'+str(c[6])+')')
+                        f+='sin^'+ str(c[2])+'('+str(c[10])+'x+'+str(c[6])+')'
                     if c[5]==0:
                         f+='sin^'+ str(c[2])+'('+str(c[10])+'x)'
                     if c[5]<0:
-                        f+=('sin^'+ str(c[2])+'('+str(c[10])+'x'+str(c[6])+')')
+                        f+='sin^'+ str(c[2])+'('+str(c[10])+'x'+str(c[6])+')'
             if c[2]<0:
                 return 'ERRORE DI SINTASSI'
 
@@ -182,35 +182,35 @@ class ourPolynomial:
                     return 'ERRORE DI SINTASSI'
                 if c[11]==1:
                     if c[7]>0:
-                        f+=('cos(y+'+str(c[7])+')')
+                        f+='cos(y+'+str(c[7])+')'
                     if c[5]==0:
                         f+='cos(y)'
                     if c[5]<0:
-                        f+=('cos(y'+str(c[7])+')')
+                        f+='cos(y'+str(c[7])+')'
                 else:
                     if c[5]>0:
-                        f+=('cos('+str(c[11])+'y+'+str(c[7])+')')
+                        f+='cos('+str(c[11])+'y+'+str(c[7])+')'
                     if c[5]==0:
                         f+='cos('+str(c[11])+'y)'
                     if c[5]<0:
-                        f+=('cos('+str(c[11])+'y'+str(c[7])+')')
+                        f+='cos('+str(c[11])+'y'+str(c[7])+')'
             if c[3]>1:
                 if c[11]==0:
                     return 'ERRORE DI SINTASSI'
                 if c[11]==1:
                     if c[7]>0:
-                        f+=('cos^'+ str(c[3])+'(y+'+str(c[7])+')')
+                        f+='cos^'+ str(c[3])+'(y+'+str(c[7])+')'
                     if c[7]==0:
                         f+='cos^'+ str(c[3])+'(y)'
                     if c[7]<0:
-                        f+=('cos^'+ str(c[3])+'(y'+str(c[7])+')')
+                        f+='cos^'+ str(c[3])+'(y'+str(c[7])+')'
                 else:
                     if c[7]>0:
-                        f+=('cos^'+ str(c[3])+'('+str(c[11])+'y+'+str(c[7])+')')
+                        f+='cos^'+ str(c[3])+'('+str(c[11])+'y+'+str(c[7])+')'
                     if c[7]==0:
                         f+='cos^'+ str(c[3])+'('+str(c[11])+'y)'
                     if c[7]<0:
-                        f+=('cos^'+ str(c[3])+'('+str(c[11])+'y'+str(c[7])+')')
+                        f+='cos^'+ str(c[3])+'('+str(c[11])+'y'+str(c[7])+')'
             if c[3]<0:
                 return 'ERRORE DI SINTASSI'
 
@@ -219,35 +219,35 @@ class ourPolynomial:
                     return 'ERRORE DI SINTASSI'
                 if c[12]==1:
                     if c[8]>0:
-                        f+=('sin(y+'+str(c[8])+')')
+                        f+='sin(y+'+str(c[8])+')'
                     if c[8]==0:
                         f+='sin(y)'
                     if c[8]<0:
-                        f+=('sin(y'+str(c[8])+')')
+                        f+='sin(y'+str(c[8])+')'
                 else:
                     if c[8]>0:
-                        f+=('sin('+str(c[12])+'y+'+str(c[8])+')')
+                        f+='sin('+str(c[12])+'y+'+str(c[8])+')'
                     if c[8]==0:
                         f+='sin('+str(c[12])+'y)'
                     if c[8]<0:
-                        f+=('sin('+str(c[12])+'y'+str(c[8])+')')
+                        f+='sin('+str(c[12])+'y'+str(c[8])+')'
             if c[4]>1:
                 if c[12]==0:
                     return 'ERRORE DI SINTASSI'
                 if c[12]==1:
                     if c[8]>0:
-                        f+=('sin^'+str(c[4])+'(y+'+str(c[8])+')')
+                        f+='sin^'+str(c[4])+'(y+'+str(c[8])+')'
                     if c[8]==0:
                         f+='sin^'+str(c[4])+'(y)'
                     if c[8]<0:
-                        f+=('sin^'+str(c[4])+'(y'+str(c[8])+')')
+                        f+='sin^'+str(c[4])+'(y'+str(c[8])+')'
                 else:
                     if c[8]>0:
-                        f+=('sin^'+str(c[4])+'('+str(c[12])+'y+'+str(c[8])+')')
+                        f+='sin^'+str(c[4])+'('+str(c[12])+'y+'+str(c[8])+')'
                     if c[8]==0:
                         f+='sin^'+str(c[4])+'('+str(c[12])+'y)'
                     if c[8]<0:
-                        f+=('sin^'+str(c[4])+'('+str(c[12])+'y'+str(c[8])+')')
+                        f+='sin^'+str(c[4])+'('+str(c[12])+'y'+str(c[8])+')'
             if c[4]<0:
                 return 'ERRORE DI SINTASSI'
         return f
@@ -255,7 +255,7 @@ class ourPolynomial:
     def dx(self):
         l = []      #lista di Monomial ognuno rappresentante le due derivate rispetto alla x derivante da ognuno dei monomi
         for m in self.monomials:
-            pair = m.dx()        #l'* serve per passargli m come lista
+            pair = m.dx()
             l.append(pair[0])               #pair[0] è un Monomial
             l.append(pair[1])               #pair[1] è un Monomial
         dx = ourPolynomial(l)               #quindi l è una lista di Monomial
@@ -264,7 +264,7 @@ class ourPolynomial:
     def dy(self):
         l = []      #lista di Monomial ognuno rappresentante le due derivate rispetto alla y derivante da ognuno dei monomi
         for m in self.monomials:
-            pair = m.dy()        #l'* serve per passargli m come lista
+            pair = m.dy()
             l.append(pair[0])               #pair[0] è un Monomial
             l.append(pair[1])               #pair[1] è un Monomial
             dy = ourPolynomial(l)           #quindi l è una lista di Monomial
@@ -273,19 +273,6 @@ class ourPolynomial:
     def gradient(self):
         return [self.dx(),self.dy()]
     '''questo ridà una lista con due ourPolynomial'''
-
-    # Per ora questo non lo metto e usiamo eval
-    # def gradientCoeff(self):
-    #     l1=[]
-    #     l2=[]
-    #     gradiente1=self.dx().get_monomials()
-    #     gradiente2=self.dy().get_monomials()
-    #     for m in gradiente1:
-    #         l1.append(Monomial(*m.get_coeffs()).get_coeffs())       #l'* serve per passargli m.get_coeffs() come lista
-    #     for m in gradiente2:
-    #         l2.append(Monomial(*m.get_coeffs()).get_coeffs())       #l'* serve per passargli m.get_coeffs() come lista
-    #     return (l1,l2)                                         
-    # '''questo ridà direttamente le liste'''
 
     def eval(self,x,y):
         value = 0
@@ -454,12 +441,6 @@ def parse(poli):                                    #poli è una stringa che rap
     l=[]
     for i in np.arange(0,size,1):
         l.append(Monomial(*list(np.append(np.append(m[i],shift[i]),molt[i]))))
-    # l=np.array([[0,0,0,0,0,0,0,0,0,0,0,0,0]])
-    # for i in np.arange(1,size+1,1):
-    #     l=np.append(l,[[0,0,0,0,0,0,0,0,0,0,0,0,0]],axis=0)
-    #     temp=list(np.append(np.append(m[i-1],shift[i-1]),molt[i-1]))
-    #     for j in np.arange(0,13,1):
-    #         l[i,j]=temp[j]
-    # l=np.delete(l,0,0)
+
     polinomio=ourPolynomial(l)
     return polinomio
