@@ -17,10 +17,10 @@ class Monomial:
             self.shift_b = 0
             self.shift_c = 0
             self.shift_d = 0
-            self.molt_a = 0
-            self.molt_b = 0
-            self.molt_c = 0
-            self.molt_d = 0
+            self.molt_a = 1
+            self.molt_b = 1
+            self.molt_c = 1
+            self.molt_d = 1
         else:
             self.a = a
             self.b = b
@@ -53,10 +53,10 @@ class Monomial:
     def dx(self):
         if self.molt_a!=self.molt_b or self.shift_a!=self.shift_b:
             dx11 = Monomial(self.a*self.r,self.a-1,self.b,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-            dx12 = Monomial(-self.molt_a,0,1,0,0,0,self.shift_a,0,0,0,self.molt_a,0,0)
+            dx12 = Monomial(-self.molt_a,0,1,0,0,0,self.shift_a,0,0,1,self.molt_a,1,1)
 
             dx21 = Monomial(self.b*self.r,self.a,self.b-1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-            dx22 = Monomial(self.molt_b,1,0,0,0,self.shift_b,0,0,0,self.molt_b,0,0,0)
+            dx22 = Monomial(self.molt_b,1,0,0,0,self.shift_b,0,0,0,self.molt_b,1,1,1)
             
             dx2 = ProductMonomial([dx21,dx22])
             dx1 = ProductMonomial([dx11,dx12])
@@ -69,17 +69,17 @@ class Monomial:
     def dy(self):
         if self.molt_c!=self.molt_d or self.shift_c!=self.shift_d:
             dy11 = Monomial(self.c*self.r,self.a,self.b,self.c-1,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-            dy12 = Monomial(-self.molt_c,0,0,0,1,0,0,0,self.shift_c,0,0,0,self.molt_c)        
+            dy12 = Monomial(-self.molt_c,0,0,0,1,0,0,0,self.shift_c,1,1,1,self.molt_c)        
             
             dy21 = Monomial(self.d*self.r,self.a,self.b,self.c,self.d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-            dy22 = Monomial(self.molt_d,0,0,1,0,0,0,self.shift_d,0,0,0,self.molt_d,0)
+            dy22 = Monomial(self.molt_d,0,0,1,0,0,0,self.shift_d,0,1,1,self.molt_d,1)
 
             dy1 = ProductMonomial([dy11,dy12])
             dy2 = ProductMonomial([dy21,dy22])
         
         else:
-            dy1 = Monomial(-self.molt_c*self.a*self.r,self.a,self.b,self.c-1,self.d+1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
-            dy2 = Monomial(self.molt_d*self.b*self.r,self.a,self.b,self.c+1,self.d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+            dy1 = Monomial(-self.molt_c*self.c*self.r,self.a,self.b,self.c-1,self.d+1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
+            dy2 = Monomial(self.molt_d*self.d*self.r,self.a,self.b,self.c+1,self.d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
 
         return (dy1,dy2)
 
@@ -94,7 +94,7 @@ class Monomial:
             f+='-'
         if c[0]<-1:
             f+=str(c[0])
-
+        
         if c[1]==1:
             if c[9]==0:
                 return 'ERRORE DI SINTASSI'
@@ -286,17 +286,20 @@ class ourPolynomial:
 
     #GETTERS
     def get_monomials(self):
-        return self.monomials           #questo ritorna una lista di liste (che sono i coefficienti)
+        return self.monomials
     
     """per printare il polinomio in modo comodo
     trasformiamo ogni monomio in string e poi sommiamo il tutto in un'unica stringa"""
     def stringa(self):
         f = ''
         for mono in self.monomials:
-            if f=='' and  mono.string()[0]=='+':                     
-                f+=mono.string()[1:]
-            else:
-                f+=mono.string()
+            if mono.string()!='':
+                if f=='' and  mono.string()=='+':                     
+                    f+='1'
+                if f=='' and  mono.string()[0]=='+' and  mono.string()!='+':                     
+                    f+=mono.string()[1:]
+                else:
+                    f+=mono.string()
         return f
 
     def dx(self):
@@ -369,6 +372,7 @@ def parse(poli):                                    #poli è una stringa che rap
     test=0             #conto le iterazioni, serve per controllare la s di cos
     test2=0
     temp=''
+
     '''riempio m con i coefficienti giusti'''
     for c in poli:
         if c=='(':
@@ -490,4 +494,5 @@ def parse(poli):                                    #poli è una stringa che rap
         l.append(Monomial(*list(np.append(np.append(m[i],shift[i]),molt[i]))))
 
     polinomio=ourPolynomial(l)
+
     return polinomio

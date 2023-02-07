@@ -84,7 +84,7 @@ def Pareto(f_1,f_2,p1,p2,p3,metodo):
     return ppc,cr1,cr2,x
 
 def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
-    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3)
+    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3,metodo)
     m='nd.gradient'
     if metodo==True:
         m='gradient'
