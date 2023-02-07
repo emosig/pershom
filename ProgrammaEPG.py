@@ -5,6 +5,9 @@ from scipy import optimize
 import numdifftools as nd
 from ourPolynomial import *
 
+#Questa è per fare delle prove senza sporcare troppo il tuo codice
+TEST_BOLZANO_DETERMINANTI = True
+
 #definisco la funzione che calcola i punti critici e i punti pareto critici, gli do in input già i gradienti e dentro EPG decido come calcolarli
 def Pareto(f_1,f_2,p1,p2,p3,metodo):
     #costruisco una griglia di p1*p1 punti sul toro [0,2pi]x[0,2pi]
@@ -94,6 +97,11 @@ def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
         axes[2].set_title('Pt Pareto Critici, '+m+', tol='+str(p3))
         axes[3].scatter([f_1.eval(p[0],p[1]) for p in ppc],[f_2.eval(p[0],p[1]) for p in ppc],s=0.2)
         axes[3].set_title('Extended Pareto Grid')
+
+        #Questo pezzo è per provare a fare qualcosa con il teorema di bolzano e i determinanti
+        if(TEST_BOLZANO_DETERMINANTI):
+            pass
+
     else:
         fig,axes=plt.subplots(1,4)
         fig.set_size_inches(28,4)

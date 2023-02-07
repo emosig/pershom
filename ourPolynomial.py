@@ -6,7 +6,7 @@ con r reale, a,b,c,d interi non negativi"""
 '''Per Eloy: mi sono accorta che tu facevi prima seno e poi coseno come ordine, io avevo guardato quanto avevi scritto in tests'''
 class Monomial:
     #CONSTRUCTOR
-    def __init__(self,r,a,b,c,d,shift_a,shift_b,shift_c,shift_d,molt_a,molt_b,molt_c,molt_d):
+    def __init__(self,r,a,b,c,d,shift_a=0,shift_b=0,shift_c=0,shift_d=0,molt_a=0,molt_b=0,molt_c=0,molt_d=0):
         self.r = r
         if r == 0:
             self.a = 0
@@ -265,6 +265,28 @@ class ourPolynomial:
                 return 'ERRORE DI SINTASSI'
         return f
 
+    #Funzione che ritorna il prodotto con un'altro ourPolynomial f
+    #PRENDE SOLTANTO IL SHIFT DELLA PRIMA FUNZIONE
+    def times(self, f):
+        l = []
+        for m in self.monomials:
+            for n in f.get_monomials():
+                l.append(m.times(n)) #Questo è il prodotto tra Monomial
+        return ourPolynomial(l)
+
+    #Funzione che ritorna la resta di due ourPolynomial
+
+    def minus(self,f):
+        f_minus = []    #Inverto il segno dei coeff dei monomi di f
+        for m in f.get_monomials():
+            r,a,b,c,d = m.get_coeffs()
+            sa,sb,sc,sd = m.get_shifts()
+            ma,mb,mc,md = m.get_molts()
+            f_minus.append(Monomial(r*(-1),a,b,c,d,sa,sb,sc,sd,ma,mb,mc,md))
+        return ourPolynomial(self.monomials + f_minus)
+
+
+
     def dx(self):
         l = []      #lista di Monomial ognuno rappresentante le due derivate rispetto alla x derivante da ognuno dei monomi
         for m in self.monomials:
@@ -292,6 +314,13 @@ class ourPolynomial:
         for m in self.monomials:
             value += m.eval(x,y)
         return value
+
+#Determinante della matrice 2x2 che ha per elementi le componenti dei gradienti di due funzioni
+#PRENDE SOLTANTO IL SHIFT DELLA PRIMA FUNZIONE
+def determinant(f1,f2):
+    a = f1.gradient()[0].times(f2.gradient()[1])
+    b = f1.gradient()[1].times(f2.gradient()[0])
+    return a.minus(b)
 
 """COSTRUZIONE DEL PARSER: data una stringa che rappresenta una funzione polinomiale in cos e sen con argomenti (a_1*x+b_1) e (a_2*y+b_2)
 ricaviamo i coefficieni (r,a,b,c,d) relativi a ogni monomio che compare nella stringa
