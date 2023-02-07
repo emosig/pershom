@@ -43,41 +43,54 @@ class Monomial:
         return [self.shift_a,self.shift_b,self.shift_c,self.shift_d]
     def get_molts(self):
         return [self.molt_a,self.molt_b,self.molt_c,self.molt_d]
+
+    #valutazione di un monomio in un punto (x,y)
+    def eval(self,x,y):
+        return self.r*(np.cos(self.molt_a*x+self.shift_a)**self.a)*(np.sin(self.molt_b*x+self.shift_b)**self.b)*(np.cos(self.molt_c*y+self.shift_c)**self.c)*(np.sin(self.molt_d*y+self.shift_d)**self.d)
     
     # CALCOLO DERIVATE PARZIALI
     #Ogni derivata parziale ritorna una i due monomi che poi andranno sommati seguendo le regole di derivazione del prodotto
     def dx(self):
-        if self.molt_c==0:
-            dx1 = Monomial(-self.a*self.r,self.a-1,self.b+1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
-        else:
-            dx1 = Monomial(-self.molt_a*self.a*self.r,self.a-1,self.b+1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
-        if self.molt_d==0:
-            dx2 = Monomial(self.b*self.r,self.a+1,self.b-1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
-        else:
-            dx2 = Monomial(self.molt_d*self.b*self.r,self.a+1,self.b-1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
+        dx11 = Monomial(self.a*self.r,self.a-1,self.b,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+        dx12 = Monomial(-self.molt_a,0,1,0,0,0,self.shift_a,0,0,0,self.molt_a,0,0)        
+        
+        dx21 = Monomial(self.b*self.r,self.a,self.b-1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+        dx22 = Monomial(self.molt_b,1,0,0,0,self.shift_b,0,0,0,self.molt_b,0,0,0)
+
+        dx1 = ProductMonomial([dx11,dx12])
+        dx2 = ProductMonomial([dx21,dx22])
+
         return (dx1,dx2)
 
     def dy(self):
-        c = self.c
-        d = self.d
-        if self.molt_c==0:
-            dy1 = Monomial(-c*self.r,self.a,self.b,c-1,d+1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
-        else:
-            dy1 = Monomial(-self.molt_c*c*self.r,self.a,self.b,c-1,d+1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
-        if self.molt_d==0:
-            dy2 = Monomial(max(1,self.molt_d)*d*self.r,self.a,self.b,c+1,d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
-        else:
-            dy2 = Monomial(self.molt_d*d*self.r,self.a,self.b,c+1,d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
+        dy11 = Monomial(self.c*self.r,self.a,self.b,self.c-1,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+        dy12 = Monomial(-self.molt_c,0,0,0,1,0,0,0,self.shift_c,0,0,0,self.molt_c)        
+        
+        dy21 = Monomial(self.d*self.r,self.a,self.b,self.c,self.d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+        dy22 = Monomial(self.molt_d,0,0,1,0,0,0,self.shift_d,0,0,0,self.molt_d,0)
+
+        dy1 = ProductMonomial([dy11,dy12])
+        dy2 = ProductMonomial([dy21,dy22])
+
         return (dy1,dy2)
 
+class ProductMonomial:
+    #CONSTRUCTOR
+    #m è una lista non vuota di Monomial di cui prenderemo il prodotto
+    def __init__(self, m):
+        self.monos = m
+
     def eval(self,x,y):
-        return self.r*(np.cos(self.molt_a*x+self.shift_a)**self.a)*(np.sin(self.molt_b*x+self.shift_b)**self.b)*(np.cos(self.molt_c*y+self.shift_c)**self.c)*(np.sin(self.molt_d*y+self.shift_d)**self.d)
+        value=1
+        for mono in self.monos:
+            value=value*mono.eval(x,y)
+        return value
 
 """Ora costruiamo i polinomi: ogni polinomio è una somma di monomi che noi interpretiamo 
 come lista di oggetti della classe Monomial"""
 class ourPolynomial:
     #CONSTRUCTOR
-    #m è una lista non vuota di Monomial
+    #m è una lista non vuota di Monomial di cui prenderemo la somma
     def __init__(self, m):
         self.monomials = m
 
