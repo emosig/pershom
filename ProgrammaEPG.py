@@ -5,9 +5,6 @@ from scipy import optimize
 import numdifftools as nd
 from ourPolynomial import *
 
-#Questa è per fare delle prove senza sporcare troppo il tuo codice
-TEST_BOLZANO_DETERMINANTI = True
-
 #definisco la funzione che calcola i punti critici e i punti pareto critici, gli do in input già i gradienti e dentro EPG decido come calcolarli
 def Pareto(f_1,f_2,p1,p2,p3,metodo):
     #costruisco una griglia di p1*p1 punti sul toro [0,2pi]x[0,2pi]
@@ -25,7 +22,7 @@ def Pareto(f_1,f_2,p1,p2,p3,metodo):
     ppc=[]  #lista dei punti Pareto Critici
     cr1=[]  #lista dei punti critici per f_1
     cr2=[]  #lista dei punti critici per f_2
-    det=[]  #lista dei determinanti
+    det=[]  #lista dei determinanti (anche se non serve)
     
     if metodo==True:
         grf_1=f_1.gradient()
@@ -46,34 +43,39 @@ def Pareto(f_1,f_2,p1,p2,p3,metodo):
         
         det.append(a[0]*b[1]-a[1]*b[0])
         
+        #la seguente condizione mi dice che ho un punto dell'insieme di Jacobi
         if abs(det[i])<=p3:
+
+            #se ho un punto critico allora è anche pareto critico (infatti verifico con tolleranza p3)
             if (abs(a[0])<=p3 and abs(a[1])<=p3):
                 ppc.append(x[i])
-            if(abs(b[0])<=p3 and abs(b[1])<=p3):       #se ho un punto critico la condizione è verificata
+            if(abs(b[0])<=p3 and abs(b[1])<=p3):
                 ppc.append(x[i])
-
+            
+            #troviamo ora i punti dell'insieme di Jacobi che non sono critici e sono Pareto Critici
+            
             if abs(a[0])<=p3 and abs(a[1])>p3:
-                if b[1]/a[1]<=p3:
+                if b[1]/a[1]<=p3:                   #sarebbe lambda<=0
                     ppc.append(x[i])
                     
             if abs(a[1])<=p3 and abs(a[0])>p3:
-                if b[0]/a[0]<=p3:
+                if b[0]/a[0]<=p3:                   #sarebbe lambda<=0
                     ppc.append(x[i])
 
             if abs(b[0])<=p3 and abs(b[1])>p3:
-                if a[1]/b[1]<=p3:
+                if a[1]/b[1]<=p3:                   #sarebbe lambda<=0
                     ppc.append(x[i])
 
             if abs(b[1])<=p3 and abs(b[0])>p3:
-                if a[0]/b[0]<=p3:
+                if a[0]/b[0]<=p3:                   #sarebbe lambda<=0
                     ppc.append(x[i])
 
             if abs(b[0])>p3 and abs(b[1])>p3:
-                if a[0]/b[0]<=p3 or a[1]/b[1]<=p3:
+                if a[0]/b[0]<=p3 or a[1]/b[1]<=p3:  #sarebbe lambda<=0
                     ppc.append(x[i])
 
             if abs(a[0])>p3 and abs(a[1])>p3:
-                if b[0]/a[0]<=p3 or b[1]/a[1]<=p3:
+                if b[0]/a[0]<=p3 or b[1]/a[1]<=p3:  #sarebbe lambda<=0
                     ppc.append(x[i])
 
     ppc=np.array(ppc)
@@ -82,9 +84,8 @@ def Pareto(f_1,f_2,p1,p2,p3,metodo):
     return ppc,cr1,cr2,x
 
 def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
-    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3,metodo)
+    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3)
     m='nd.gradient'
-    
     if metodo==True:
         m='gradient'
         fig,axes=plt.subplots(1,4)
@@ -97,10 +98,6 @@ def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
         axes[2].set_title('Pt Pareto Critici, '+m+', tol='+str(p3))
         axes[3].scatter([f_1.eval(p[0],p[1]) for p in ppc],[f_2.eval(p[0],p[1]) for p in ppc],s=0.2)
         axes[3].set_title('Extended Pareto Grid')
-
-        #Questo pezzo è per provare a fare qualcosa con il teorema di bolzano e i determinanti
-        if(TEST_BOLZANO_DETERMINANTI):
-            pass
 
     else:
         fig,axes=plt.subplots(1,4)
