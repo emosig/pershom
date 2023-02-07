@@ -6,7 +6,7 @@ con r reale, a,b,c,d interi non negativi"""
 '''Per Eloy: mi sono accorta che tu facevi prima seno e poi coseno come ordine, io avevo guardato quanto avevi scritto in tests'''
 class Monomial:
     #CONSTRUCTOR
-    def __init__(self,r,a,b,c,d,shift_a=0,shift_b=0,shift_c=0,shift_d=0,molt_a=0,molt_b=0,molt_c=0,molt_d=0):
+    def __init__(self,r,a,b,c,d,shift_a,shift_b,shift_c,shift_d,molt_a,molt_b,molt_c,molt_d):
         self.r = r
         if r == 0:
             self.a = 0
@@ -51,28 +51,199 @@ class Monomial:
     # CALCOLO DERIVATE PARZIALI
     #Ogni derivata parziale ritorna una i due monomi che poi andranno sommati seguendo le regole di derivazione del prodotto
     def dx(self):
-        dx11 = Monomial(self.a*self.r,self.a-1,self.b,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-        dx12 = Monomial(-self.molt_a,0,1,0,0,0,self.shift_a,0,0,0,self.molt_a,0,0)        
-        
-        dx21 = Monomial(self.b*self.r,self.a,self.b-1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-        dx22 = Monomial(self.molt_b,1,0,0,0,self.shift_b,0,0,0,self.molt_b,0,0,0)
+        if self.molt_a!=self.molt_b or self.shift_a!=self.shift_b:
+            dx11 = Monomial(self.a*self.r,self.a-1,self.b,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+            dx12 = Monomial(-self.molt_a,0,1,0,0,0,self.shift_a,0,0,0,self.molt_a,0,0)
 
-        dx1 = ProductMonomial([dx11,dx12])
-        dx2 = ProductMonomial([dx21,dx22])
+            dx21 = Monomial(self.b*self.r,self.a,self.b-1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+            dx22 = Monomial(self.molt_b,1,0,0,0,self.shift_b,0,0,0,self.molt_b,0,0,0)
+            
+            dx2 = ProductMonomial([dx21,dx22])
+            dx1 = ProductMonomial([dx11,dx12])
+        else:
+            dx1 = Monomial(-self.molt_a*self.a*self.r,self.a-1,self.b+1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
+            dx2 = Monomial(self.molt_b*self.b*self.r,self.a+1,self.b-1,self.c,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
 
         return (dx1,dx2)
 
     def dy(self):
-        dy11 = Monomial(self.c*self.r,self.a,self.b,self.c-1,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-        dy12 = Monomial(-self.molt_c,0,0,0,1,0,0,0,self.shift_c,0,0,0,self.molt_c)        
-        
-        dy21 = Monomial(self.d*self.r,self.a,self.b,self.c,self.d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
-        dy22 = Monomial(self.molt_d,0,0,1,0,0,0,self.shift_d,0,0,0,self.molt_d,0)
+        if self.molt_c!=self.molt_d or self.shift_c!=self.shift_d:
+            dy11 = Monomial(self.c*self.r,self.a,self.b,self.c-1,self.d,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+            dy12 = Monomial(-self.molt_c,0,0,0,1,0,0,0,self.shift_c,0,0,0,self.molt_c)        
+            
+            dy21 = Monomial(self.d*self.r,self.a,self.b,self.c,self.d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
+            dy22 = Monomial(self.molt_d,0,0,1,0,0,0,self.shift_d,0,0,0,self.molt_d,0)
 
-        dy1 = ProductMonomial([dy11,dy12])
-        dy2 = ProductMonomial([dy21,dy22])
+            dy1 = ProductMonomial([dy11,dy12])
+            dy2 = ProductMonomial([dy21,dy22])
+        
+        else:
+            dy1 = Monomial(-self.molt_c*self.a*self.r,self.a,self.b,self.c-1,self.d+1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d) 
+            dy2 = Monomial(self.molt_d*self.b*self.r,self.a,self.b,self.c+1,self.d-1,self.shift_a,self.shift_b,self.shift_c,self.shift_d,self.molt_a,self.molt_b,self.molt_c,self.molt_d)
 
         return (dy1,dy2)
+
+    def string(self):
+        f=''
+        c=self.get_coeffs()+self.get_shifts()+self.get_molts()  #c è una lista di 13 numeri (1 coeff direttore[0], 4 esponenti[1,2,3,4], 4 schift[5,6,7,8], 4 moltiplicatori[9,10,11,12])
+        if c[0]>1:
+            f+='+'+str(c[0])
+        if c[0]==1:
+            f+='+'
+        if c[0]==-1:
+            f+='-'
+        if c[0]<-1:
+            f+=str(c[0])
+
+        if c[1]==1:
+            if c[9]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[9]==1:
+                if c[5]>0:
+                    f+='cos(x+'+str(c[5])+')'
+                if c[5]==0:
+                    f+='cos(x)'
+                if c[5]<0:
+                    f+='cos(x'+str(c[5])+')'
+            else:
+                if c[5]>0:
+                    f+='cos('+str(c[9])+'x+'+str(c[5])+')'
+                if c[5]==0:
+                    f+='cos('+str(c[9])+'x)'
+                if c[5]<0:
+                    f+='cos('+str(c[9])+'x'+str(c[5])+')'
+        if c[1]>1:
+            if c[9]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[9]==1:
+                if c[5]>0:
+                    f+='cos^'+ str(c[1])+'(x+'+str(c[5])+')'
+                if c[5]==0:
+                    f+='cos^'+ str(c[1])+'(x)'
+                if c[5]<0:
+                    f+='cos^'+ str(c[1])+'(x'+str(c[5])+')'
+            else:
+                if c[5]>0:
+                    f+='cos^'+ str(c[1])+'('+str(c[9])+'x+'+str(c[5])+')'
+                if c[5]==0:
+                    f+='cos^'+ str(c[1])+'('+str(c[9])+'x)'
+                if c[5]<0:
+                    f+='cos^'+ str(c[1])+'('+str(c[9])+'x'+str(c[5])+')'
+        if c[1]<0:
+            return 'ERRORE DI SINTASSI'
+
+        if c[2]==1:
+            if c[10]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[10]==1:
+                if c[6]>0:
+                    f+='sin(x+'+str(c[6])+')'
+                if c[6]==0:
+                    f+='sin(x)'
+                if c[6]<0:
+                    f+='sin(x'+str(c[6])+')'
+            else:
+                if c[6]>0:
+                    f+='sin('+str(c[10])+'x+'+str(c[6])+')'
+                if c[6]==0:
+                    f+='sin('+str(c[10])+'x)'
+                if c[6]<0:
+                    f+='sin('+str(c[10])+'x'+str(c[6])+')'
+        if c[2]>1:
+            if c[10]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[10]==1:
+                if c[5]>0:
+                    f+='sin^'+ str(c[2])+'(x+'+str(c[6])+')'
+                if c[5]==0:
+                    f+='sin^'+ str(c[2])+'(x)'
+                if c[5]<0:
+                    f+='sin^'+ str(c[2])+'(x'+str(c[6])+')'
+            else:
+                if c[5]>0:
+                    f+='sin^'+ str(c[2])+'('+str(c[10])+'x+'+str(c[6])+')'
+                if c[5]==0:
+                    f+='sin^'+ str(c[2])+'('+str(c[10])+'x)'
+                if c[5]<0:
+                    f+='sin^'+ str(c[2])+'('+str(c[10])+'x'+str(c[6])+')'
+        if c[2]<0:
+            return 'ERRORE DI SINTASSI'
+
+        if c[3]==1:
+            if c[11]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[11]==1:
+                if c[7]>0:
+                    f+='cos(y+'+str(c[7])+')'
+                if c[5]==0:
+                    f+='cos(y)'
+                if c[5]<0:
+                    f+='cos(y'+str(c[7])+')'
+            else:
+                if c[5]>0:
+                    f+='cos('+str(c[11])+'y+'+str(c[7])+')'
+                if c[5]==0:
+                    f+='cos('+str(c[11])+'y)'
+                if c[5]<0:
+                    f+='cos('+str(c[11])+'y'+str(c[7])+')'
+        if c[3]>1:
+            if c[11]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[11]==1:
+                if c[7]>0:
+                    f+='cos^'+ str(c[3])+'(y+'+str(c[7])+')'
+                if c[7]==0:
+                    f+='cos^'+ str(c[3])+'(y)'
+                if c[7]<0:
+                    f+='cos^'+ str(c[3])+'(y'+str(c[7])+')'
+            else:
+                if c[7]>0:
+                    f+='cos^'+ str(c[3])+'('+str(c[11])+'y+'+str(c[7])+')'
+                if c[7]==0:
+                    f+='cos^'+ str(c[3])+'('+str(c[11])+'y)'
+                if c[7]<0:
+                    f+='cos^'+ str(c[3])+'('+str(c[11])+'y'+str(c[7])+')'
+        if c[3]<0:
+            return 'ERRORE DI SINTASSI'
+
+        if c[4]==1:
+            if c[12]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[12]==1:
+                if c[8]>0:
+                    f+='sin(y+'+str(c[8])+')'
+                if c[8]==0:
+                    f+='sin(y)'
+                if c[8]<0:
+                    f+='sin(y'+str(c[8])+')'
+            else:
+                if c[8]>0:
+                    f+='sin('+str(c[12])+'y+'+str(c[8])+')'
+                if c[8]==0:
+                    f+='sin('+str(c[12])+'y)'
+                if c[8]<0:
+                    f+='sin('+str(c[12])+'y'+str(c[8])+')'
+        if c[4]>1:
+            if c[12]==0:
+                return 'ERRORE DI SINTASSI'
+            if c[12]==1:
+                if c[8]>0:
+                    f+='sin^'+str(c[4])+'(y+'+str(c[8])+')'
+                if c[8]==0:
+                    f+='sin^'+str(c[4])+'(y)'
+                if c[8]<0:
+                    f+='sin^'+str(c[4])+'(y'+str(c[8])+')'
+            else:
+                if c[8]>0:
+                    f+='sin^'+str(c[4])+'('+str(c[12])+'y+'+str(c[8])+')'
+                if c[8]==0:
+                    f+='sin^'+str(c[4])+'('+str(c[12])+'y)'
+                if c[8]<0:
+                    f+='sin^'+str(c[4])+'('+str(c[12])+'y'+str(c[8])+')'
+        if c[4]<0:
+            return 'ERRORE DI SINTASSI'
+        
+        return f
 
 class ProductMonomial:
     #CONSTRUCTOR
@@ -86,11 +257,30 @@ class ProductMonomial:
             value=value*mono.eval(x,y)
         return value
 
+    def string(self):
+        f=''
+        for mono in self.monos:
+            if f=='':
+                f+=mono.string()
+            else:
+                if mono.string()[0]=='-':
+                    f+=mono.string()[1:]
+                    temp=f[1:]
+                    if f[0]=='-':
+                        f='+' + temp
+                    else:
+                        f='-' + temp
+                if mono.string()[0]=='+':
+                        f+=mono.string()[1:]
+
+        return f
+
+
 """Ora costruiamo i polinomi: ogni polinomio è una somma di monomi che noi interpretiamo 
 come lista di oggetti della classe Monomial"""
 class ourPolynomial:
     #CONSTRUCTOR
-    #m è una lista non vuota di Monomial di cui prenderemo la somma
+    #m è una lista non vuota di Monomial e ProductMonomial di cui prenderemo la somma
     def __init__(self, m):
         self.monomials = m
 
@@ -102,167 +292,11 @@ class ourPolynomial:
     trasformiamo ogni monomio in string e poi sommiamo il tutto in un'unica stringa"""
     def stringa(self):
         f = ''
-        L=self.monomials
-        for mono in L:                     #c è una lista di 13 numeri (1 coeff direttore[0], 4 esponenti[1,2,3,4], 4 schift[5,6,7,8], 4 moltiplicatori[9,10,11,12])
-            c=mono.get_coeffs()+mono.get_shifts()+mono.get_molts()
-            if c[0]>1:
-                if f!='':
-                    f+='+'+str(c[0])
-                else:
-                    f+=str(c[0])
-            if c[0]==1:
-                if f!='':
-                    f+='+'
-            if c[0]<0:
-                f+=str(c[0])
-
-            if c[1]==1:
-                if c[9]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[9]==1:
-                    if c[5]>0:
-                        f+='cos(x+'+str(c[5])+')'
-                    if c[5]==0:
-                        f+='cos(x)'
-                    if c[5]<0:
-                        f+='cos(x'+str(c[5])+')'
-                else:
-                    if c[5]>0:
-                        f+='cos('+str(c[9])+'x+'+str(c[5])+')'
-                    if c[5]==0:
-                        f+='cos('+str(c[9])+'x)'
-                    if c[5]<0:
-                        f+='cos('+str(c[9])+'x'+str(c[5])+')'
-            if c[1]>1:
-                if c[9]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[9]==1:
-                    if c[5]>0:
-                        f+='cos^'+ str(c[1])+'(x+'+str(c[5])+')'
-                    if c[5]==0:
-                        f+='cos^'+ str(c[1])+'(x)'
-                    if c[5]<0:
-                        f+='cos^'+ str(c[1])+'(x'+str(c[5])+')'
-                else:
-                    if c[5]>0:
-                        f+='cos^'+ str(c[1])+'('+str(c[9])+'x+'+str(c[5])+')'
-                    if c[5]==0:
-                        f+='cos^'+ str(c[1])+'('+str(c[9])+'x)'
-                    if c[5]<0:
-                        f+='cos^'+ str(c[1])+'('+str(c[9])+'x'+str(c[5])+')'
-            if c[1]<0:
-                return 'ERRORE DI SINTASSI'
-
-            if c[2]==1:
-                if c[10]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[10]==1:
-                    if c[6]>0:
-                        f+='sin(x+'+str(c[6])+')'
-                    if c[6]==0:
-                        f+='sin(x)'
-                    if c[6]<0:
-                        f+='sin(x'+str(c[6])+')'
-                else:
-                    if c[6]>0:
-                        f+='sin('+str(c[10])+'x+'+str(c[6])+')'
-                    if c[6]==0:
-                        f+='sin('+str(c[10])+'x)'
-                    if c[6]<0:
-                        f+='sin('+str(c[10])+'x'+str(c[6])+')'
-            if c[2]>1:
-                if c[10]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[10]==1:
-                    if c[5]>0:
-                        f+='sin^'+ str(c[2])+'(x+'+str(c[6])+')'
-                    if c[5]==0:
-                        f+='sin^'+ str(c[2])+'(x)'
-                    if c[5]<0:
-                        f+='sin^'+ str(c[2])+'(x'+str(c[6])+')'
-                else:
-                    if c[5]>0:
-                        f+='sin^'+ str(c[2])+'('+str(c[10])+'x+'+str(c[6])+')'
-                    if c[5]==0:
-                        f+='sin^'+ str(c[2])+'('+str(c[10])+'x)'
-                    if c[5]<0:
-                        f+='sin^'+ str(c[2])+'('+str(c[10])+'x'+str(c[6])+')'
-            if c[2]<0:
-                return 'ERRORE DI SINTASSI'
-
-            if c[3]==1:
-                if c[11]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[11]==1:
-                    if c[7]>0:
-                        f+='cos(y+'+str(c[7])+')'
-                    if c[5]==0:
-                        f+='cos(y)'
-                    if c[5]<0:
-                        f+='cos(y'+str(c[7])+')'
-                else:
-                    if c[5]>0:
-                        f+='cos('+str(c[11])+'y+'+str(c[7])+')'
-                    if c[5]==0:
-                        f+='cos('+str(c[11])+'y)'
-                    if c[5]<0:
-                        f+='cos('+str(c[11])+'y'+str(c[7])+')'
-            if c[3]>1:
-                if c[11]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[11]==1:
-                    if c[7]>0:
-                        f+='cos^'+ str(c[3])+'(y+'+str(c[7])+')'
-                    if c[7]==0:
-                        f+='cos^'+ str(c[3])+'(y)'
-                    if c[7]<0:
-                        f+='cos^'+ str(c[3])+'(y'+str(c[7])+')'
-                else:
-                    if c[7]>0:
-                        f+='cos^'+ str(c[3])+'('+str(c[11])+'y+'+str(c[7])+')'
-                    if c[7]==0:
-                        f+='cos^'+ str(c[3])+'('+str(c[11])+'y)'
-                    if c[7]<0:
-                        f+='cos^'+ str(c[3])+'('+str(c[11])+'y'+str(c[7])+')'
-            if c[3]<0:
-                return 'ERRORE DI SINTASSI'
-
-            if c[4]==1:
-                if c[12]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[12]==1:
-                    if c[8]>0:
-                        f+='sin(y+'+str(c[8])+')'
-                    if c[8]==0:
-                        f+='sin(y)'
-                    if c[8]<0:
-                        f+='sin(y'+str(c[8])+')'
-                else:
-                    if c[8]>0:
-                        f+='sin('+str(c[12])+'y+'+str(c[8])+')'
-                    if c[8]==0:
-                        f+='sin('+str(c[12])+'y)'
-                    if c[8]<0:
-                        f+='sin('+str(c[12])+'y'+str(c[8])+')'
-            if c[4]>1:
-                if c[12]==0:
-                    return 'ERRORE DI SINTASSI'
-                if c[12]==1:
-                    if c[8]>0:
-                        f+='sin^'+str(c[4])+'(y+'+str(c[8])+')'
-                    if c[8]==0:
-                        f+='sin^'+str(c[4])+'(y)'
-                    if c[8]<0:
-                        f+='sin^'+str(c[4])+'(y'+str(c[8])+')'
-                else:
-                    if c[8]>0:
-                        f+='sin^'+str(c[4])+'('+str(c[12])+'y+'+str(c[8])+')'
-                    if c[8]==0:
-                        f+='sin^'+str(c[4])+'('+str(c[12])+'y)'
-                    if c[8]<0:
-                        f+='sin^'+str(c[4])+'('+str(c[12])+'y'+str(c[8])+')'
-            if c[4]<0:
-                return 'ERRORE DI SINTASSI'
+        for mono in self.monomials:
+            if f=='' and  mono.string()[0]=='+':                     
+                f+=mono.string()[1:]
+            else:
+                f+=mono.string()
         return f
 
     def dx(self):
