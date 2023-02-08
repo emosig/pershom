@@ -83,7 +83,7 @@ class Monomial:
 
         return (dy1,dy2)
 
-    def string(self):
+    def __str__(self):
         f=''
         c=self.get_coeffs()+self.get_shifts()+self.get_molts()  #c è una lista di 13 numeri (1 coeff direttore[0], 4 esponenti[1,2,3,4], 4 schift[5,6,7,8], 4 moltiplicatori[9,10,11,12])
         if c[0]>1:
@@ -257,21 +257,21 @@ class ProductMonomial:
             value=value*mono.eval(x,y)
         return value
 
-    def string(self):
+    def __str__(self):
         f=''
         for mono in self.monos:
             if f=='':
-                f+=mono.string()
+                f+=mono.__str__()
             else:
-                if mono.string()[0]=='-':
-                    f+=mono.string()[1:]
+                if mono.__str__()[0]=='-':
+                    f+=mono.__str__()[1:]
                     temp=f[1:]
                     if f[0]=='-':
                         f='+' + temp
                     else:
                         f='-' + temp
-                if mono.string()[0]=='+':
-                        f+=mono.string()[1:]
+                if mono.__str__()[0]=='+':
+                        f+=mono.__str__()[1:]
 
         return f
 
@@ -290,16 +290,16 @@ class ourPolynomial:
     
     """per printare il polinomio in modo comodo
     trasformiamo ogni monomio in string e poi sommiamo il tutto in un'unica stringa"""
-    def stringa(self):
+    def __str__(self):
         f = ''
         for mono in self.monomials:
-            if mono.string()!='':
-                if f=='' and  mono.string()=='+':                     
+            if mono.__str__()!='':
+                if f=='' and  mono.__str__()=='+':                     
                     f+='1'
-                if f=='' and  mono.string()[0]=='+' and  mono.string()!='+':                     
-                    f+=mono.string()[1:]
+                if f=='' and  mono.__str__()[0]=='+' and  mono.__str__()!='+':                     
+                    f+=mono.__str__()[1:]
                 else:
-                    f+=mono.string()
+                    f+=mono.__str__()
         return f
 
     def dx(self):

@@ -5,6 +5,13 @@ from scipy import optimize
 import numdifftools as nd
 from ourPolynomial import *
 
+#Metodo ausiliare per chiarezza nella funzione Pareto. p = x[i].
+def append_aux(p,f_1,f_2,ppc,f1ppc,f2ppc):
+    ppc.append(p)
+    f1ppc.append(f_1.eval(p[0],p[1]))
+    f2ppc.append(f_2.eval(p[0],p[1]))
+    return True     #Questo true è per il booleano 'aggiunto'
+
 #definisco la funzione che calcola i punti critici e i punti pareto critici, gli do in input già i gradienti e dentro EPG decido come calcolarli
 def Pareto(f_1,f_2,p1,p2,p3,metodo):
     #costruisco una griglia di p1*p1 punti sul toro [0,2pi]x[0,2pi]
@@ -23,7 +30,9 @@ def Pareto(f_1,f_2,p1,p2,p3,metodo):
     cr1=[]  #lista dei punti critici per f_1
     cr2=[]  #lista dei punti critici per f_2
     det=[]  #lista dei determinanti (anche se non serve)
-    
+    f1ppc=[] #I punti che verrano plottati (immagini dei ppc)
+    f2ppc=[]
+
     if metodo==True:
         grf_1=f_1.gradient()
         grf_2=f_2.gradient()
@@ -46,45 +55,52 @@ def Pareto(f_1,f_2,p1,p2,p3,metodo):
         #la seguente condizione mi dice che ho un punto dell'insieme di Jacobi
         if abs(det[i])<=p3:
 
+            aggiunto = False    #Per evitare ripetere dei punti
+
             #se ho un punto critico allora è anche pareto critico (infatti verifico con tolleranza p3)
             if (abs(a[0])<=p3 and abs(a[1])<=p3):
-                ppc.append(x[i])
-            if(abs(b[0])<=p3 and abs(b[1])<=p3):
-                ppc.append(x[i])
+                aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
+
+            if(abs(b[0])<=p3 and abs(b[1])<=p3) and not aggiunto:
+                aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
             
             #troviamo ora i punti dell'insieme di Jacobi che non sono critici e sono Pareto Critici
             
-            if abs(a[0])<=p3 and abs(a[1])>p3:
+            if abs(a[0])<=p3 and abs(a[1])>p3 and not aggiunto:
                 if b[1]/a[1]<=p3:                   #sarebbe lambda<=0
-                    ppc.append(x[i])
+                    aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
                     
-            if abs(a[1])<=p3 and abs(a[0])>p3:
+            if abs(a[1])<=p3 and abs(a[0])>p3 and not aggiunto:
                 if b[0]/a[0]<=p3:                   #sarebbe lambda<=0
-                    ppc.append(x[i])
+                    aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
 
-            if abs(b[0])<=p3 and abs(b[1])>p3:
+            if abs(b[0])<=p3 and abs(b[1])>p3 and not aggiunto:
                 if a[1]/b[1]<=p3:                   #sarebbe lambda<=0
-                    ppc.append(x[i])
+                    aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
 
-            if abs(b[1])<=p3 and abs(b[0])>p3:
+            if abs(b[1])<=p3 and abs(b[0])>p3 and not aggiunto:
                 if a[0]/b[0]<=p3:                   #sarebbe lambda<=0
-                    ppc.append(x[i])
+                    aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
 
-            if abs(b[0])>p3 and abs(b[1])>p3:
+            if abs(b[0])>p3 and abs(b[1])>p3 and not aggiunto:
                 if a[0]/b[0]<=p3 or a[1]/b[1]<=p3:  #sarebbe lambda<=0
-                    ppc.append(x[i])
+                    aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
 
-            if abs(a[0])>p3 and abs(a[1])>p3:
+            if abs(a[0])>p3 and abs(a[1])>p3 and not aggiunto:
                 if b[0]/a[0]<=p3 or b[1]/a[1]<=p3:  #sarebbe lambda<=0
-                    ppc.append(x[i])
+                    aggiunto = append_aux(x[i],f_1,f_2,ppc,f1ppc,f2ppc)
 
     ppc=np.array(ppc)
     cr1=np.array(cr1)
     cr2=np.array(cr2)
-    return ppc,cr1,cr2,x
+    f1ppc=np.array(f1ppc)
+    f2ppc=np.array(f2ppc)
+
+
+    return ppc,cr1,cr2,x,f1ppc,f2ppc
 
 def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
-    ppc,cr1,cr2,x=Pareto(f_1,f_2,p1,p2,p3,metodo)
+    ppc,cr1,cr2,x,f1ppc,f2ppc=Pareto(f_1,f_2,p1,p2,p3,metodo)
     m='nd.gradient'
     if metodo==True:
         m='gradient'
@@ -96,7 +112,7 @@ def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
         axes[1].set_title('Pt crit di f_2, '+m+' con tol='+str(p2))
         axes[2].scatter([p[0] for p in ppc],[p[1] for p in ppc],s=0.2)
         axes[2].set_title('Pt Pareto Critici, '+m+', tol='+str(p3))
-        axes[3].scatter([f_1.eval(p[0],p[1]) for p in ppc],[f_2.eval(p[0],p[1]) for p in ppc],s=0.2)
+        axes[3].scatter([p for p in f1ppc],[q for q in f2ppc],s=0.2)
         axes[3].set_title('Extended Pareto Grid')
 
     else:
@@ -110,3 +126,10 @@ def EPG(f_1,f_2,p1,p2,p3,metodo):  #gli argomenti sono ourPolynomial
         axes[2].set_title('Pt Pareto Critici, '+m+', tol='+str(p3))
         axes[3].scatter([f_1(p) for p in ppc],[f_2(p) for p in ppc],s=0.2)
         axes[3].set_title('Extended Pareto Grid')
+
+    #TESTING (mi serve per capire la quantità di punti che stiamo plottando)
+    return f1ppc,f2ppc
+
+#Mi serve capire quale è il più piccolo rettangolo che contiene i punti pareto critici
+def get_square(f1ppc,f2ppc):
+    return min(f1ppc), max(f1ppc), min(f2ppc), max(f2ppc)
