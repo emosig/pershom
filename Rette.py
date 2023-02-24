@@ -14,7 +14,7 @@ import matplotlib.cm as cm
 # considerare le rette e un'altro per la quantità di rette considerate. Per ora li tengo fissi:
 
 RETTE = 20  #quantità di rette 
-EPS = 0.2  #quanto grosse sono le rette
+EPS = 0.1  #quanto grosse sono le rette
 
 #fisso anche per ora la pendenza m per il tipo 1 e il punto (a,b) per il tipo 2
 M = 1
@@ -22,7 +22,7 @@ A,B = 0,1
 
 #Fisso una tolleranza per i "cluster" di punti vicini nelle rette. I cluster più grandi 
 # saranno interpretati come rumore
-CLUST_EPS = 0.1
+CLUST_EPS = 0.05
 
 #Questo è soltanto per ora per vedere che le rette sono quelle che io voglio
 #In realtà noi queste intersezioni non le vorremmo vedere, sono per togliere l'errore
@@ -54,7 +54,8 @@ def intersect_sheaf_type1(f1ppc,f2ppc,m=M):
     if PLOT:
         colors = cm.rainbow(np.linspace(0, 1, len(intersection_list)))
         for r,c in zip(intersection_list,colors):
-            plt.scatter([p[0] for p in r],[p[1] for p in r],s=8,color=c)
+            plt.scatter([p[0] for p in r],[p[1] for p in r],s=4,color=c)
+        plt.title("Intersezione con " + str(RETTE) + " rette tipo 1 con tolleranza " + str(EPS))
     
     return np.array(intersection_list, dtype=object)
 
@@ -79,7 +80,8 @@ def intersect_sheaf_type2(f1ppc,f2ppc,a=A,b=B):
     if PLOT:
         colors = cm.rainbow(np.linspace(0, 1, len(intersection_list)))
         for r,c in zip(intersection_list,colors):
-            plt.scatter([p[0] for p in r],[p[1] for p in r],s=8,color=c)
+            plt.scatter([p[0] for p in r],[p[1] for p in r],s=4,color=c)
+        plt.title("Intersezione con " + str(RETTE) + " rette tipo 2 con tolleranza " + str(EPS))
 
     return np.array(intersection_list, dtype=object)
 
@@ -108,13 +110,15 @@ def sheaf_of_clusters(intersection_list):
 
     if PLOT:
         #Plotto i clusters della prima retta significativa
-        cl_line = cluster_list[5]
+        cl_line = cluster_list[10]
         colors = cm.rainbow(np.linspace(0, 1, len(cl_line)))
         for cl,c in zip(cl_line,colors):
-            plt.scatter([p[0] for p in cl],[p[1] for p in cl],s=8,color=c)
-        plt.title("I diversi cluster in una delle rette del fascio.")
+            plt.scatter([p[0] for p in cl],[p[1] for p in cl],s=4,color=c)
+        plt.title("I cluster in una delle rette del fascio con CLUST_EPS = " + str(CLUST_EPS))
 
     return np.array(cluster_list, dtype=object)
+
+
 
 
 
