@@ -153,6 +153,10 @@ def recalculate_cluster(cluster,f_1,f_2,f1ppc,f2ppc,tol):
             Pareto_crit(p,a,b,f_1,f_2,temp_ppc,temp_f1ppc,temp_f2ppc,tol)
 
         #CONTROLLO: HO EFFETTIVAMENTE RIDOTTO LA QUANTITÀ DI PUNTI NEL CLUSTER?
+        if len(temp_ppc) < len(cluster)/4:
+            ridurre_ancora = False
+        '''
+        ###UN'ALTRO METODO PER RIDURRE LA TOLLERANZA. NON SI VEDONO DIFFERENZE CON L'ALTRO METODO
         #CONTROLLO: C'È UNA DIFFERENZA TROPPO GRANDE CON L'ITERAZIONE PRECEDENTE?
         if len(temp_ppc) < len(cluster)/4:
             decresc = False
@@ -162,7 +166,9 @@ def recalculate_cluster(cluster,f_1,f_2,f1ppc,f2ppc,tol):
                 old_ppc = temp_ppc.copy()
         else:
             decresc = True
+        '''
         i+=1
+        
     
     return temp_f1ppc, temp_f2ppc, i    #Mi serve capire quante iterazioni ha fatto
 
