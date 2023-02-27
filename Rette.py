@@ -13,8 +13,8 @@ import matplotlib.cm as cm
 #Ci vogliono due nuovi parametri di precisione: uno per quanto "grosse" vogliamo
 # considerare le rette e un'altro per la quantità di rette considerate. Per ora li tengo fissi:
 
-RETTE = 20  #quantità di rette 
-EPS = 0.1  #quanto grosse sono le rette
+RETTE = 100  #quantità di rette 
+EPS = 0.05  #quanto grosse sono le rette
 
 #fisso anche per ora la pendenza m per il tipo 1 e il punto (a,b) per il tipo 2
 M = 1
@@ -26,7 +26,7 @@ CLUST_EPS = 0.05
 
 #Questo è soltanto per ora per vedere che le rette sono quelle che io voglio
 #In realtà noi queste intersezioni non le vorremmo vedere, sono per togliere l'errore
-PLOT = True
+PLOT = False
 
 #Intersezione con una retta di tipo 1 
 def intersect_line_type1(f1ppc,f2ppc,a,m=M):
