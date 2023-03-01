@@ -16,7 +16,7 @@ import matplotlib.cm as cm
 RETTE = 100  #quantità di rette 
 EPS = 0.05  #quanto grosse sono le rette
 
-#fisso anche per ora la pendenza m per il tipo 1 e il punto (a,b) per il tipo 2
+#fisso valori default per la pendenza m per il tipo 1 e il punto (a,b) per il tipo 2
 M = 1
 A,B = 0,1
 
@@ -29,16 +29,17 @@ CLUST_EPS = 0.05
 PLOT = False
 
 #Intersezione con una retta di tipo 1 
-def intersect_line_type1(f1ppc,f2ppc,a,m=M):
+#Nel linguaggio di Frosini questa è r_{(1/m-1,a)}, (1/m-1,a) \in (0,1)x\R
+def intersect_line_type1(f1ppc,f2ppc,a,m=M,eps=EPS):
     inter = []
     for p,q  in zip(f1ppc,f2ppc):
-        if abs(q-m*p - a) < EPS: #In realtà sto facendo 2 rette pero i punti vanno nella stessa lista
+        if abs(q-m*p - a) < eps: #In realtà sto facendo 2 rette pero i punti vanno nella stessa lista
             if [p,q] not in inter:
                 inter.append([p,q])
     return np.array(sorted(inter))
 
 #Intersezione con un fascio di rette tipo 1
-def intersect_sheaf_type1(f1ppc,f2ppc,m=M):
+def intersect_sheaf_type1(f1ppc,f2ppc,m=M,eps=EPS):
     intersection_list = []  #Lista di liste: intersezione di ogni retta considerata con l'EPG
 
     #Mi calcolo il rango in cui voglio fare variare a
@@ -48,7 +49,7 @@ def intersect_sheaf_type1(f1ppc,f2ppc,m=M):
 
     #Voglio variare a \in [miny,maxy]
     for a in np.linspace(mina,maxa,RETTE):
-        line = intersect_line_type1(f1ppc,f2ppc,a,m)
+        line = intersect_line_type1(f1ppc,f2ppc,a,m,eps)
         intersection_list.append(line)
     
     if PLOT:
@@ -60,21 +61,21 @@ def intersect_sheaf_type1(f1ppc,f2ppc,m=M):
     return np.array(intersection_list, dtype=object)
 
 #Intersezione con una retta di tipo 2
-def intersect_line_type2(f1ppc,f2ppc,k,a=A,b=B):
+def intersect_line_type2(f1ppc,f2ppc,k,a=A,b=B,eps=EPS):
     inter = []
     for p,q  in zip(f1ppc,f2ppc):
-        if abs(np.sin(k)*(q-b) - np.cos(k)*(p-a)) < EPS:
+        if abs(np.sin(k)*(q-b) - np.cos(k)*(p-a)) < eps:
             if [p,q] not in inter:
                 inter.append([p,q])
     return np.array(sorted(inter))
 
 #Intersezione con un fascio di rette tipo 2
-def intersect_sheaf_type2(f1ppc,f2ppc,a=A,b=B):
+def intersect_sheaf_type2(f1ppc,f2ppc,a=A,b=B,eps=EPS):
     intersection_list = []
 
     #k lo faccio variare in [0,pi]
     for k in np.linspace(0,np.pi,RETTE):
-        line = intersect_line_type2(f1ppc,f2ppc,k,a,b)
+        line = intersect_line_type2(f1ppc,f2ppc,k,a,b,eps)
         intersection_list.append(line)
 
     if PLOT:
