@@ -30,7 +30,7 @@ def isSpecial(intersection, a, eps):
                     if 0.5 - eps < r < 0.5 + eps or 1 - eps < r < 1 + eps or 2 - eps < r < 2 + eps:
                         return True
         else:           #In questo caso guardo la coordinata [1] dei punti. Analogo a quello prima
-            for alfa,beta in pairsofpairs: 
+            for alfa,beta in pairsofpairs:
                 if abs(beta[0][1] - beta[1][1]) > eps:
                     r = abs(alfa[0][1] - alfa[1][1])/abs(beta[0][1] - beta[1][1])
                     if 0.5 - eps < r < 0.5 + eps or 1 - eps < r < 1 + eps or 2 - eps < r < 2 + eps:
@@ -63,12 +63,13 @@ def intersect_line_2EPG(a,b,eps,f1ppc,f2ppc,g1ppc,g2ppc):
     if len(interf)>0 and len(interg)>0:
         return np.concatenate((interf,interg))
     elif len(interf)>0:
-        return interg
-    elif len(interg)>0:
         return interf
+    elif len(interg)>0:
+        return interg
     else:
-        return []
+        return np.array([])
 
+    
 #Special set dentro il rettangolo (0,1)x[-C,C]
 #tolx,toly sono i parametri per costruire la griglia di punti sul rettangolo
 def special_set(C,tolx,toly,eps,f1ppc,f2ppc,g1ppc,g2ppc):
@@ -95,10 +96,19 @@ def special_set(C,tolx,toly,eps,f1ppc,f2ppc,g1ppc,g2ppc):
 
 #TESTING
 if __name__ == "__main__":
-    '''
     intersection = np.array([np.array([0,0]),np.array([0,1]),np.array([0.001,0.004]),
                              np.array([2,3]),np.array([2.001,7]),np.array([-1,7.001])])
     a = 0.2
-    b,alfa,beta = isSpecial(intersection,a,0.05)
-    '''
+
+    pairsofpairs = combinations(list(combinations(intersection,2)),2)
+    for p,q in pairsofpairs:
+        print(p)
+        print(q)
+        print(' --- ')
+
+
+    isSpecial(intersection,a,0.05)
+
+
+
 
