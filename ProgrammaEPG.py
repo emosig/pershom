@@ -18,7 +18,7 @@ def append_aux(p,f_1,f_2,ppc,f1ppc,f2ppc):
     return True     #Questo true è per il booleano 'aggiunto'
 '''
 #definisco la funzione che calcola i punti critici
-def Critic(grf_1,grf_2,p1,p2):
+def Critic(grf_1,grf_2,p1):
 
     eps=2*np.pi/p1
     
@@ -34,9 +34,9 @@ def Critic(grf_1,grf_2,p1,p2):
         a=[grf_1[0].eval(p[0],p[1]),grf_1[1].eval(p[0],p[1])]
         b=[grf_2[0].eval(p[0],p[1]),grf_2[1].eval(p[0],p[1])]
 
-        if abs(a[0])<=p2 and abs(a[1])<=p2:       #punto critico per f_1
+        if abs(a[0])<=0.001 and abs(a[1])<=0.001:       #punto critico per f_1
             cr1.append(p)
-        if abs(b[0])<=p2 and abs(b[1])<=p2:       #punto critico per f_2
+        if abs(b[0])<=0.001 and abs(b[1])<=0.001:       #punto critico per f_2
             cr2.append(p)
 
     cr1=np.array(cr1)
@@ -118,7 +118,7 @@ def Pareto(grf_1,grf_2,p1,p3):  #in input i gradienti
     '''
     return x
 
-def EPG(f1,f2,p1,p2,p3):
+def EPG(f1,f2,p1,p3):
 
     npunt=p1*p1
     eps=2*np.pi/p1
@@ -126,7 +126,7 @@ def EPG(f1,f2,p1,p2,p3):
     grf_1=f1.gradient()
     grf_2=f2.gradient()
 
-    cr1,cr2=Critic(grf_1,grf_2,p1,p2)
+    cr1,cr2=Critic(grf_1,grf_2,p1)
     x=Pareto(grf_1,grf_2,p1,p3)
     ppc = [p for p,v in x.items() if v]     #Raccolge i punti di x che sono true
     epg=[]
