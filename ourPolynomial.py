@@ -3,7 +3,7 @@ import numpy as np
 """Costruiamo i monomi. Ogni monomio avrà un ordine interno, ovvero è della forma ordinata
 r*(cos x)^a*(sen x)^b*(cos y)^c*(sen y)^d, quindi è identificato dalla tupla (r,a,b,c,d)
 con r reale, a,b,c,d interi non negativi"""
-'''Per Eloy: mi sono accorta che tu facevi prima seno e poi coseno come ordine, io avevo guardato quanto avevi scritto in tests'''
+
 class Monomial:
     #CONSTRUCTOR
     def __init__(self,r,a,b,c,d,shift_a,shift_b,shift_c,shift_d,molt_a,molt_b,molt_c,molt_d):
@@ -97,7 +97,7 @@ class Monomial:
         
         if c[1]==1:
             if c[9]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[9]==1:
                 if c[5]>0:
                     f+='cos(x+'+str(c[5])+')'
@@ -114,7 +114,7 @@ class Monomial:
                     f+='cos('+str(c[9])+'x'+str(c[5])+')'
         if c[1]>1:
             if c[9]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[9]==1:
                 if c[5]>0:
                     f+='cos^'+ str(c[1])+'(x+'+str(c[5])+')'
@@ -130,11 +130,11 @@ class Monomial:
                 if c[5]<0:
                     f+='cos^'+ str(c[1])+'('+str(c[9])+'x'+str(c[5])+')'
         if c[1]<0:
-            return 'ERRORE DI SINTASSI'
+            raise Exception('ERRORE DI SINTASSI')
 
         if c[2]==1:
             if c[10]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[10]==1:
                 if c[6]>0:
                     f+='sin(x+'+str(c[6])+')'
@@ -151,7 +151,7 @@ class Monomial:
                     f+='sin('+str(c[10])+'x'+str(c[6])+')'
         if c[2]>1:
             if c[10]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[10]==1:
                 if c[5]>0:
                     f+='sin^'+ str(c[2])+'(x+'+str(c[6])+')'
@@ -167,11 +167,11 @@ class Monomial:
                 if c[5]<0:
                     f+='sin^'+ str(c[2])+'('+str(c[10])+'x'+str(c[6])+')'
         if c[2]<0:
-            return 'ERRORE DI SINTASSI'
+            raise Exception('ERRORE DI SINTASSI')
 
         if c[3]==1:
             if c[11]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[11]==1:
                 if c[7]>0:
                     f+='cos(y+'+str(c[7])+')'
@@ -188,7 +188,7 @@ class Monomial:
                     f+='cos('+str(c[11])+'y'+str(c[7])+')'
         if c[3]>1:
             if c[11]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[11]==1:
                 if c[7]>0:
                     f+='cos^'+ str(c[3])+'(y+'+str(c[7])+')'
@@ -204,11 +204,11 @@ class Monomial:
                 if c[7]<0:
                     f+='cos^'+ str(c[3])+'('+str(c[11])+'y'+str(c[7])+')'
         if c[3]<0:
-            return 'ERRORE DI SINTASSI'
+            raise Exception('ERRORE DI SINTASSI')
 
         if c[4]==1:
             if c[12]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[12]==1:
                 if c[8]>0:
                     f+='sin(y+'+str(c[8])+')'
@@ -225,7 +225,7 @@ class Monomial:
                     f+='sin('+str(c[12])+'y'+str(c[8])+')'
         if c[4]>1:
             if c[12]==0:
-                return 'ERRORE DI SINTASSI'
+                raise Exception('ERRORE DI SINTASSI')
             if c[12]==1:
                 if c[8]>0:
                     f+='sin^'+str(c[4])+'(y+'+str(c[8])+')'
@@ -241,7 +241,7 @@ class Monomial:
                 if c[8]<0:
                     f+='sin^'+str(c[4])+'('+str(c[12])+'y'+str(c[8])+')'
         if c[4]<0:
-            return 'ERRORE DI SINTASSI'
+            raise Exception('ERRORE DI SINTASSI')
         
         return f
 
@@ -371,11 +371,15 @@ def parse(poli):                                    #poli è una stringa che rap
     p=0                #indice di parità che distingue numero [posizione 0] coseno [posizione 1 e 3] e seno [posizione 2 e 4] mi dice dove mettere il coeff che ho salvato
     test=0             #conto le iterazioni, serve per controllare la s di cos
     test2=0
-    temp=''
+    temp=''            #serve per salvare l'esponente di seno e coseno in caso ci sia un coeff davanti a x,y
 
     '''riempio m con i coefficienti giusti'''
     for c in poli:
         if c=='(':
+            if poli[test-1] in ['s','n']:
+                temp='1'
+            if poli[test-1] not in ['s','n','0','1','2','3','4','5','6','7','8','9']:
+                raise Exception('ERRORE DI SINTASSI')
             test2=test
             for c in poli[test+1:]:
                 if c in ['-','0','1','2','3','4','5','6','7','8','9'] and molt_test==0:
@@ -395,8 +399,7 @@ def parse(poli):                                    #poli è una stringa che rap
 
         if c==')' and shift_test==1:                                #se ho trovato uno shift(test in fondo quando trovo x o y) lo inserisco nella lista degli shift
             if s=='+' or s=='-':
-                print('ERRORE DI SINTASSI')
-                return 0
+                raise Exception('ERRORE DI SINTASSI')
             else:
                 shift[i,p-1]=int(s)
                 s=''
@@ -405,7 +408,7 @@ def parse(poli):                                    #poli è una stringa che rap
 
         if c in ['+','-','0','1','2','3','4','5','6','7','8','9']:
             s+=c                                                    #aggiungo tutti i caratteri numerici alla stringa ausiliaria fichè finiscono i numeri, poi posiziono questo coeff nel punto giusto
-            if (c in ['+','-']) and m[0,0]!=0 and (shift_test==0):  #vuol dire che ho già incontrato un monomio e ne sto incontrando un altro; assumo che l'utente non metta 0 come primo coefficiente...
+            if (c in ['+','-']) and m[0,0]!=0 and shift_test==0:  #vuol dire che ho già incontrato un monomio e ne sto incontrando un altro; assumo che l'utente non metta 0 come primo coefficiente...
                 i=i+1                                               #quindi incremento l'indice che scorre m
 
         if c=='c':                              #ho incontrato un coseno (o risp a x o risp a y )
@@ -449,8 +452,7 @@ def parse(poli):                                    #poli è una stringa che rap
             else:
                 temp=s
             if m[i,p]!=0:                           #vuol dire che in quel monomio ho già inserito l'esponente relativo a quel fattore
-                print('ERRORE DI SINTASSI')
-                return 0     
+                raise Exception('ERRORE DI SINTASSI')
             if temp=='':                               #caso in cui ho esponente 1 e non ho scritto ^1
                 m[i,p]=1
             else:
@@ -474,8 +476,7 @@ def parse(poli):                                    #poli è una stringa che rap
             else:
                 temp=s
             if m[i,p]!=0:                           #vuol dire che in quel monomio ho già inserito l'esponente relativo a quel fattore
-                print('ERRORE DI SINTASSI')
-                return 0     
+                raise Exception('ERRORE DI SINTASSI')     
             if temp=='':                               #caso in cui ho esponente 1 e non ho scritto ^1
                 m[i,p]=1
             else:

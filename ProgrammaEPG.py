@@ -3,6 +3,7 @@ import numpy as np
 import scipy as scipy
 from ourPolynomial import *
 from itertools import product
+from Rette import *
 
 CLUST_MAX_ITER = 50     #Massimo di iterazioni per il clustering
 CLUST_VAR_STOP = 5      #Se in una iterazione di clustering aggiungo o tolgo 
@@ -16,82 +17,20 @@ def append_aux(p,f_1,f_2,ppc,f1ppc,f2ppc):
     f2ppc.append(f_2.eval(p[0],p[1]))
     return True     #Questo true è per il booleano 'aggiunto'
 '''
-    
-#Controlla se un punto è pareto-critico con tolleranza = tol
-def Pareto_crit(p,a,b,x,tol):
-    x[p] = False
+#definisco la funzione che calcola i punti critici
+def Critic(grf_1,grf_2,p1,p2):
 
-    #se ho un punto critico allora è anche pareto critico (infatti verifico con tolleranza p3)
-    if (abs(a[0])<=tol and abs(a[1])<=tol):
-        x[p]= True
-        
-    if(abs(b[0])<=tol and abs(b[1])<=tol):
-        x[p]= True
-    
-    #troviamo ora i punti dell'insieme di Jacobi che non sono critici e sono Pareto Critici
-    
-    if abs(a[0])<=tol and abs(a[1])>tol:
-        if b[1]/a[1]<=tol:                   #sarebbe lambda<=0
-            x[p]= True
-            
-    if abs(a[1])<=tol and abs(a[0])>tol:
-        if b[0]/a[0]<=tol:                   #sarebbe lambda<=0
-            x[p]= True
-
-    if abs(b[0])<=tol and abs(b[1])>tol:
-        if a[1]/b[1]<=tol:                   #sarebbe lambda<=0
-            x[p]= True
-
-    if abs(b[1])<=tol and abs(b[0])>tol:
-        if a[0]/b[0]<=tol:                   #sarebbe lambda<=0
-            x[p]= True
-
-    if abs(b[0])>tol and abs(b[1])>tol:
-        if a[0]/b[0]<=tol and a[1]/b[1]<=tol:  #sarebbe lambda<=0
-            x[p]= True
-
-    if abs(a[0])>tol and abs(a[1])>tol:
-        if b[0]/a[0]<=tol and b[1]/a[1]<=tol:  #sarebbe lambda<=0
-            x[p]= True
-
-    return x[p]     #Return True se lo ha aggiunto
-
-#definisco la funzione che calcola i punti critici e i punti pareto critici, gli do in input già i gradienti e dentro EPG decido come calcolarli
-def Pareto(f_1,f_2,p1,p2,p3):
-    #costruisco una griglia di p1*p1 punti sul toro [0,2pi]x[0,2pi]
-    grid = product(np.linspace(0,2*np.pi,p1),np.linspace(0,2*np.pi,p1))
-    x = {p: False for p in grid}
-    '''
     eps=2*np.pi/p1
-    x=[]
+    
+    grid=[]
     for i in np.arange(0,2*np.pi+eps,eps):
         for j in np.arange(0,2*np.pi+eps,eps):
-            x.append([i,j])
-    x=np.array(x)
-    l=len(x)
-    '''
+            grid.append([i,j])
     
-    #p2=precisione per il calcolo dei punti critici
-    #p3=precisione per il calcolo dei punti Pareto critici
-
     cr1=[]  #lista dei punti critici per f_1
     cr2=[]  #lista dei punti critici per f_2
-    '''
-    det=[]  #lista dei determinanti (anche se non serve)
-    ppc=[]  #lista dei punti Pareto Critici
-    f1ppc=[] #I punti che verrano plottati (immagini dei ppc)
-    f2ppc=[]
-    '''
 
-    grf_1=f_1.gradient()
-    grf_2=f_2.gradient()
-
-    '''
-    for i in range (0,l,1):
-        a=[grf_1[0].eval(x[i][0],x[i][1]),grf_1[1].eval(x[i][0],x[i][1])]
-        b=[grf_2[0].eval(x[i][0],x[i][1]),grf_2[1].eval(x[i][0],x[i][1])]
-    '''
-    for p in x.keys():
+    for p in grid:
         a=[grf_1[0].eval(p[0],p[1]),grf_1[1].eval(p[0],p[1])]
         b=[grf_2[0].eval(p[0],p[1]),grf_2[1].eval(p[0],p[1])]
 
@@ -99,40 +38,135 @@ def Pareto(f_1,f_2,p1,p2,p3):
             cr1.append(p)
         if abs(b[0])<=p2 and abs(b[1])<=p2:       #punto critico per f_2
             cr2.append(p)
-        
-        #la seguente condizione mi dice che ho un punto dell'insieme di Jacobi
-        det = a[0]*b[1]-a[1]*b[0]
-        if abs(det)<=p3:
-            Pareto_crit(p,a,b,x,p3)
-
 
     cr1=np.array(cr1)
     cr2=np.array(cr2)
+
+    return cr1,cr2
+
+#Controlla se un punto p è pareto-critico; input: [a=gradiente di f1 calcolato in p] , [b=gradiente di f2 calcolato in p] , [tol=tolleranza nel verificare condizione]
+def Pareto_crit(a,b,tol):
+    test = False
+
+    #se ho un punto critico allora è anche pareto critico (infatti verifico con tolleranza p3)
+    if (abs(a[0])<=tol and abs(a[1])<=tol):
+        test = True
+        
+    if(abs(b[0])<=tol and abs(b[1])<=tol):
+        test = True 
+
+    #troviamo ora i punti dell'insieme di Jacobi che non sono critici e sono Pareto Critici
+    if abs(a[0])<=tol and abs(a[1])>tol:
+        if b[1]/a[1]<=tol:                   #sarebbe lambda<=0
+            test = True
+            
+    if abs(a[1])<=tol and abs(a[0])>tol:
+        if b[0]/a[0]<=tol:                   #sarebbe lambda<=0
+            test = True
+
+    if abs(b[0])<=tol and abs(b[1])>tol:
+        if a[1]/b[1]<=tol:                   #sarebbe lambda<=0
+            test = True
+
+    if abs(b[1])<=tol and abs(b[0])>tol:
+        if a[0]/b[0]<=tol:                   #sarebbe lambda<=0
+            test = True
+
+    if abs(b[0])>tol and abs(b[1])>tol:
+        if a[0]/b[0]<=tol and a[1]/b[1]<=tol:  #sarebbe lambda<=0
+            test = True
+
+    if abs(a[0])>tol and abs(a[1])>tol:
+        if b[0]/a[0]<=tol and b[1]/a[1]<=tol:  #sarebbe lambda<=0
+            test = True
+
+    return test     #Return True se lo ha aggiunto
+
+def Pareto(grf_1,grf_2,p1,p3):  #in input i gradienti
+    #costruisco una griglia di p1*p1 punti sul toro [0,2pi]x[0,2pi]
+    #grid = product(np.linspace(0,2*np.pi,p1),np.linspace(0,2*np.pi,p1))
+    eps=2*np.pi/p1
+    grid=[]
+    for i in np.arange(0,2*np.pi+eps,eps):
+        for j in np.arange(0,2*np.pi+eps,eps):
+            grid.append((i,j))
+
+    x = {p: False for p in grid}
+    '''
+    det=[]  #lista dei determinanti (anche se non serve)
+    ppc=[]  #lista dei punti Pareto Critici
+    f1ppc=[] #I punti che verrano plottati (immagini dei ppc)
+    f2ppc=[]
+    
+    for i in range (0,l,1):
+        a=[grf_1[0].eval(x[i][0],x[i][1]),grf_1[1].eval(x[i][0],x[i][1])]
+        b=[grf_2[0].eval(x[i][0],x[i][1]),grf_2[1].eval(x[i][0],x[i][1])]
+    '''
+    for p in x.keys():
+        a=[grf_1[0].eval(p[0],p[1]),grf_1[1].eval(p[0],p[1])]
+        b=[grf_2[0].eval(p[0],p[1]),grf_2[1].eval(p[0],p[1])]
+        
+        #la seguente condizione mi dice che ho un punto dell'insieme di Jacobi
+        det = a[0]*b[1]-a[1]*b[0]
+
+        if abs(det)<=p3:
+            x[p]=Pareto_crit(a,b,p3)
     '''
     ppc=np.array(ppc)
     f1ppc=np.array(f1ppc)
     f2ppc=np.array(f2ppc)
     '''
-
-    return cr1,cr2,x
-
-def EPG(f_1,f_2,p1,p2,p3):  #Plot delle cose
-    cr1,cr2,x,=Pareto(f_1,f_2,p1,p2,p3)
-    ppc = [p for p,v in x.items() if v]     #Raccolge i punti di x che sono true
-    m='gradient'
-    fig,axes=plt.subplots(1,4)
-    fig.set_size_inches(28,4)
-    axes[0].scatter([p[0] for p in cr1],[p[1] for p in cr1],s=8)
-    axes[0].set_title('Pt crit di f_1, '+m+' con tol='+str(p2))
-    axes[1].scatter([p[0] for p in cr2],[p[1] for p in cr2],s=8)
-    axes[1].set_title('Pt crit di f_2, '+m+' con tol='+str(p2))
-    axes[2].scatter([p[0] for p in ppc],[p[1] for p in ppc],s=0.2)
-    axes[2].set_title('Pt Pareto Critici, '+m+', tol='+str(p3))
-    axes[3].scatter([f_1.eval(p[0],p[1]) for p in ppc],[f_2.eval(p[0],p[1]) for p in ppc],s=0.2)
-    axes[3].set_title('Extended Pareto Grid')
-
-    #TESTING (mi serve per capire la quantità di punti che stiamo plottando)
     return x
+
+def EPG(f1,f2,p1,p2,p3):
+
+    npunt=p1*p1
+    eps=2*np.pi/p1
+
+    grf_1=f1.gradient()
+    grf_2=f2.gradient()
+
+    cr1,cr2=Critic(grf_1,grf_2,p1,p2)
+    x=Pareto(grf_1,grf_2,p1,p3)
+    ppc = [p for p,v in x.items() if v]     #Raccolge i punti di x che sono true
+    epg=[]
+    for p in ppc:
+        epg.append([f1.eval(p[0],p[1]),f2.eval(p[0],p[1])])
+    
+    improper_arcs=[]
+    #aggiungo le semirette
+    maxx=max([abs(p[0]) for p in epg])
+    maxy=max([abs(p[1]) for p in epg])
+
+    for p in cr1:
+        f1_p=f1.eval(p[0],p[1])
+        f2_p=f2.eval(p[0],p[1])
+        for i in np.arange (eps, 2*maxx+1, eps):
+            improper_arcs.append([f1_p,f2_p+i])
+    
+    for p in cr2:
+        f1_p=f1.eval(p[0],p[1])
+        f2_p=f2.eval(p[0],p[1])
+        for i in np.arange (eps, 2*maxy+1, eps):
+            improper_arcs.append([f1_p+i,f2_p])
+
+    #titolo che avrà il plot con le info varie
+    titl='f(x,y)=(' + f1.__str__() + ',' + f2.__str__() + ')\n tol=' + str(p3) + ' grid\'s points=' + str(npunt)
+    
+    return x,epg,improper_arcs,titl
+
+def EPG_plot(epg,titl):
+    fig,axes=plt.subplots(1,1)
+    axes.scatter([p[0] for p in epg],[p[1] for p in epg],s=0.2)
+    axes.set_title(titl)
+
+    return fig
+
+def EPG_file(epg,titl,name='puntiEPG'):
+    file=open(name+'.txt', 'w')
+    file.write(titl+'\n The points in the Extended Pareto Grid of f are the following: \n')
+    L=[str(p)+'\n' for p in epg]
+    file.writelines(L)
 
 #Mi serve capire quale è il più piccolo rettangolo che contiene i punti pareto critici
 def get_square(ppc,f1,f2):
@@ -159,7 +193,6 @@ def recalculate_cluster(cluster,x,f1,f2,tol):
             tol = tol/2
         else:
             tol = tol*3/2
-
         '''
         #Mi servono delle liste ausiliari di punti pareto-critici per controllare che sto
         #effettivamente riducendo la quantità di punti nel cluster
@@ -194,14 +227,15 @@ def recalculate_cluster(cluster,x,f1,f2,tol):
 
 #Applica il metodo sopra per i cluster "grandi" e plotta
 def manage_clusters(cluster_list,x,f1,f2,tol):
+    '''
     ppc = [p for p,v in x.items() if v]
     #Plot
-    fig,axes=plt.subplots(1,2)
-    fig.set_size_inches(21,6)
-    axes[0].scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
-    axes[0].set_aspect('equal')
-    axes[0].set_title('Vecchia Extended Pareto Grid con ' + str(len(ppc)) + ' punti')
-
+    fig,axes=plt.subplots(1,1)
+    
+    fig.set_size_inches(3,3)
+    # axes[0].scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
+    # axes[0].set_aspect('equal')
+    # axes[0].set_title('Vecchia Extended Pareto Grid con ' + str(len(ppc)) + ' punti')'''
     nclusters = 0   #Quanti clusters ho ridotto.
     '''
     old_points = [np.array([p,q]) for p,q in zip(f1ppc,f2ppc)]
@@ -226,7 +260,6 @@ def manage_clusters(cluster_list,x,f1,f2,tol):
     axes[1].set_aspect('equal')
     axes[1].set_title('Nuova Extended Pareto Grid con ' + str(len(diff_points)) + ' punti')
     '''
-
     for line in cluster_list:
         for cl in line:
             #Quanto grandi sono i cluster che voglio trattare?
@@ -234,13 +267,32 @@ def manage_clusters(cluster_list,x,f1,f2,tol):
                 iter = recalculate_cluster(cl,x,f1,f2,tol)
                 if iter < CLUST_MAX_ITER:   #Se l'algoritmo si è fermato prima del massimo di iterazioni
                     nclusters += 1  
-
+    '''
     #Plot
     ppc = [p for p,v in x.items() if v]     #Nuovo ppc
-    axes[1].scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
-    axes[1].set_aspect('equal')
-    axes[1].set_title('Nuova Extended Pareto Grid con ' + str(len(ppc)) + ' punti')            
+    
+    # axes[1].scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
+    # axes[1].set_aspect('equal')
+    # axes[1].set_title('Nuova Extended Pareto Grid con ' + str(len(ppc)) + ' punti')          
+    axes.scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
+    axes.set_title('Nuova Extended Pareto Grid con ' + str(len(ppc)) + ' punti')            
+    return fig'''
 
-    return nclusters
+    return x
+    #return nclusters
 
+def noise_reduction(x,f1,f2,tol,oldtitle,improper_arcs):
+    t1rette=intersect_sheaf_type1(x,f1,f2)
+    t1cluster=sheaf_of_clusters(t1rette,f1,f2)
+    x=manage_clusters(t1cluster,x,f1,f2,tol)
+    ppc = [p for p,v in x.items() if v]     #Raccolge i punti di x che sono true
+    epg=[]
+    for p in ppc:
+        epg.append([f1.eval(p[0],p[1]),f2.eval(p[0],p[1])])
+    #aggiungo gli improper arcs
+    epg=epg+improper_arcs
 
+    #titolo che avrà il plot con le info varie
+    titl=oldtitle+'\n riduzione con metodo rette'
+    
+    return x,epg,titl
