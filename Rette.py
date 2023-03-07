@@ -25,7 +25,7 @@ CLUST_EPS = 0.2
 
 #Questo è soltanto per ora per vedere che le rette sono quelle che io voglio
 #In realtà noi queste intersezioni non le vorremmo vedere, sono per togliere l'errore
-PLOT = True
+PLOT = False
 
 #Intersezione con una retta di tipo 1 
 #Nel linguaggio di Frosini questa è r_{(1/m-1,a)}, (1/m-1,a) \in (0,1)x\R
@@ -135,6 +135,21 @@ def sheaf_of_clusters(intersection_list,f1,f2):
 
     return np.array(cluster_list, dtype=object)
 
+def noise_reduction(x,f1,f2,tol,oldtitle,improper_arcs):
+    t1rette=intersect_sheaf_type1(x,f1,f2)
+    t1cluster=sheaf_of_clusters(t1rette,f1,f2)
+    x=manage_clusters(t1cluster,x,f1,f2,tol)
+    ppc = [p for p,v in x.items() if v]     #Raccolge i punti di x che sono true
+    epg=[]
+    for p in ppc:
+        epg.append([f1.eval(p[0],p[1]),f2.eval(p[0],p[1])])
+    #aggiungo gli improper arcs
+    epg=epg+improper_arcs
+
+    #titolo che avrà il plot con le info varie
+    titl=oldtitle+' riduction'
+    
+    return x,epg,titl
 
 
 

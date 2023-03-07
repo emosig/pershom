@@ -3,7 +3,6 @@ import numpy as np
 import scipy as scipy
 from ourPolynomial import *
 from itertools import product
-from Rette import *
 
 CLUST_MAX_ITER = 50     #Massimo di iterazioni per il clustering
 CLUST_VAR_STOP = 5      #Se in una iterazione di clustering aggiungo o tolgo 
@@ -204,7 +203,7 @@ def recalculate_cluster(cluster,x,f1,f2,tol):
         for p in cluster:
             a=[grf_1[0].eval(p[0],p[1]),grf_1[1].eval(p[0],p[1])]
             b=[grf_2[0].eval(p[0],p[1]),grf_2[1].eval(p[0],p[1])]
-            if Pareto_crit(p,a,b,x,tol):
+            if Pareto_crit(a,b,tol):
                 counter +=1
 
         #CONTROLLO: HO EFFETTIVAMENTE RIDOTTO LA QUANTITÀ DI PUNTI NEL CLUSTER?
@@ -280,19 +279,3 @@ def manage_clusters(cluster_list,x,f1,f2,tol):
 
     return x
     #return nclusters
-
-def noise_reduction(x,f1,f2,tol,oldtitle,improper_arcs):
-    t1rette=intersect_sheaf_type1(x,f1,f2)
-    t1cluster=sheaf_of_clusters(t1rette,f1,f2)
-    x=manage_clusters(t1cluster,x,f1,f2,tol)
-    ppc = [p for p,v in x.items() if v]     #Raccolge i punti di x che sono true
-    epg=[]
-    for p in ppc:
-        epg.append([f1.eval(p[0],p[1]),f2.eval(p[0],p[1])])
-    #aggiungo gli improper arcs
-    epg=epg+improper_arcs
-
-    #titolo che avrà il plot con le info varie
-    titl=oldtitle+'\n riduzione con metodo rette'
-    
-    return x,epg,titl
