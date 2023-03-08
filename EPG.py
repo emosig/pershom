@@ -59,8 +59,17 @@ class EPGtab(tk.Frame):
         except Exception as e:
             showerror(title='ERRORE', message='qualcosa è andato storto \n' + str(e))
             return
+        
+        try: 
+            self.slope = float(self.slope_entry.get())
+            if self.slope < 0: 
+                    showerror(title='ERRORE', message='tol1 deve essere positiva \n')
+                    return        
+        except Exception as e:
+            showerror(title='ERRORE', message='qualcosa è andato storto \n' + str(e))
+            return
 
-        self.x_refined,self.epg_refined,self.titl_refined = noise_reduction(self.x,self.f1,self.f2,self.tol2,self.titl,self.improper_arcs)
+        self.x_refined,self.epg_refined,self.titl_refined = noise_reduction(self.x,self.f1,self.f2,self.tol2,self.titl,self.improper_arcs,m=self.slope)
         #self.x_refined,self.epg_refined,self.improper_arcs_refined,self.titl_refined=EPG(parse('cos(x)'),parse('sen(x)'),200,0.01)
         
         fig=EPG_plot(self.epg_refined,self.titl_refined)
@@ -70,6 +79,8 @@ class EPGtab(tk.Frame):
         toolbar = NavigationToolbar2Tk(canvas, self.right_frame)
         toolbar.update()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        self.noise_reduction_button['state']='disabled'
 
         TextFile2=tk.Label(self.center_frame,text='Save the points of the\n new Extended Pareto Grid\n to .txt file')
         TextFile2.pack()
@@ -117,9 +128,15 @@ class EPGtab(tk.Frame):
         self.tol2_entry.pack(padx=5,pady=5) 
         self.tol2_entry.insert(0,str(self.tol1/10))
 
+        slope_label = tk.Label(self.center_frame,text='Line Slope')
+        slope_label.pack(padx=5,pady=5)
+        self.slope_entry = tk.Entry(master = self.center_frame)
+        self.slope_entry.pack(padx=5,pady=5) 
+        self.slope_entry.insert(0,str(1))
 
-        noise_reduction_button = tk.Button(self.center_frame,text='Reduce',command=self.reduce_noise)
-        noise_reduction_button.pack(padx=5,pady=5)
+
+        self.noise_reduction_button = tk.Button(self.center_frame,text='Reduce',command=self.reduce_noise)
+        self.noise_reduction_button.pack(padx=5,pady=5)
         
 
 class CustomNotebook(ttk.Notebook):
