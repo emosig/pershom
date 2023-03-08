@@ -168,8 +168,8 @@ def EPG_file(epg,titl,name='puntiEPG'):
     file.writelines(L)
 
 #Mi serve capire quale è il più piccolo rettangolo che contiene i punti pareto critici
-def get_square(ppc,f1,f2):
-    f1ppc = [f1.eval(p[0],p[1]) for p in ppc]
+def get_square(ppc,f1,f2,trasl=0):
+    f1ppc = [f1.eval(p[0],p[1]) + trasl for p in ppc]
     f2ppc = [f2.eval(p[0],p[1]) for p in ppc]
     return min(f1ppc), max(f1ppc), min(f2ppc), max(f2ppc)
 

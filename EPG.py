@@ -384,7 +384,7 @@ notebook.pack(side =TOP,fill=BOTH)
 '''
 #per far spuntare la finestra
 root= Tk()
-root.title('Extender Pareto Grid Calculation')
+root.title('Extended Pareto Grid Calculation')
 
 epgPlotter = EPGplotter(root)
 epgPlotter.pack()

@@ -29,18 +29,20 @@ PLOT = False
 
 #Intersezione con una retta di tipo 1 
 #Nel linguaggio di Frosini questa è r_{(1/m-1,a)}, (1/m-1,a) \in (0,1)x\R
-def intersect_line_type1(ppc,f1,f2,a,m=M,eps=EPS):
+def intersect_line_type1(ppc,f1,f2,a,m=M,eps=EPS,trasl=0,sort=False):
     inter = []
     for p in ppc:
-        x = f1.eval(p[0],p[1])
+        x = f1.eval(p[0],p[1]) + trasl
         y = f2.eval(p[0],p[1])
         if abs(y-m*x - a) < eps:
             if p not in inter:
                 inter.append(p)
-    return sorted(inter)
+    if sort:
+        inter = sorted(inter)
+    return inter
 
 #Intersezione con un fascio di rette tipo 1
-def intersect_sheaf_type1(x,f1,f2,m=M,eps=EPS):
+def intersect_sheaf_type1(x,f1,f2,m=M,eps=EPS,sort=False):
     intersection_list = []  #Lista di liste: intersezione di ogni retta considerata con l'EPG
     ppc = [p for p,v in x.items() if v] #I punti pareto critici
 
@@ -51,7 +53,7 @@ def intersect_sheaf_type1(x,f1,f2,m=M,eps=EPS):
 
     #Voglio variare a \in [miny,maxy]
     for a in np.linspace(mina,maxa,RETTE):
-        line = intersect_line_type1(ppc,f1,f2,a,m,eps)
+        line = intersect_line_type1(ppc,f1,f2,a,m,eps,sort)
         if len(line)>0:
             intersection_list.append(line)
     
@@ -136,7 +138,7 @@ def sheaf_of_clusters(intersection_list,f1,f2):
     return np.array(cluster_list, dtype=object)
 
 def noise_reduction(x,f1,f2,tol,oldtitle,improper_arcs):
-    t1rette=intersect_sheaf_type1(x,f1,f2)
+    t1rette=intersect_sheaf_type1(x,f1,f2,sort=True)
     t1cluster=sheaf_of_clusters(t1rette,f1,f2)
     x=manage_clusters(t1cluster,x,f1,f2,tol)
     ppc = [p for p,v in x.items() if v]     #Raccolge i punti di x che sono true
@@ -150,6 +152,7 @@ def noise_reduction(x,f1,f2,tol,oldtitle,improper_arcs):
     titl=oldtitle+' riduction'
     
     return x,epg,titl
+
 
 
 
