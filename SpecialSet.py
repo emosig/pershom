@@ -42,20 +42,23 @@ def isSpecial(intersection, a, eps):
     return False
 
 #Intersezione  r_{(a,b)} \cap (\Gamma(f) \cup \Gamma(g))
-def intersect_line_2EPG(a,b,eps,f1ppc,f2ppc,g1ppc,g2ppc):
+def intersect_line_2EPG(a,b,eps,xf,f1,f2,xg,g1,g2):
     #Retta r_{(a,b)}
     m=(1-a)/a       #Sto considerando a \neq 0, 1
+    #I punti paretocritici
+    ppcf = [p for p,v in xf.items() if v]
+    ppcg = [p for p,v in xg.items() if v]
     #Se la retta non interseca i rettangoli che contengono gli EPG non faccio niente
-    fminx,fmaxx,fminy,fmaxy = get_square(f1ppc,f2ppc)
-    gminx,gmaxx,gminy,gmaxy = get_square(g1ppc,g2ppc)
+    fminx,fmaxx,fminy,fmaxy = get_square(ppcf,f1,f2)
+    gminx,gmaxx,gminy,gmaxy = get_square(ppcg,g1,g2)
     xf = (fmaxy +b)/m + b
     xg = (gmaxy +b)/m + b
     if fminx <= xf <= fmaxx:
-        interf = intersect_line_type1(f1ppc,f2ppc,b,m,eps)
+        interf = intersect_line_type1(ppcf,f1,f2,b,m,eps)
     else:
         interf = []
     if gminx <= xg <= gmaxx:
-        interg = intersect_line_type1(g1ppc,g2ppc,b,m,eps)
+        interg = intersect_line_type1(ppcg,g1,g2,b,m,eps)
     else:
         interg = []
     
@@ -72,12 +75,12 @@ def intersect_line_2EPG(a,b,eps,f1ppc,f2ppc,g1ppc,g2ppc):
     
 #Special set dentro il rettangolo (0,1)x[-C,C]
 #tolx,toly sono i parametri per costruire la griglia di punti sul rettangolo
-def special_set(C,tolx,toly,eps,f1ppc,f2ppc,g1ppc,g2ppc):
+def special_set(C,tolx,toly,eps,xf,f1,f2,xg,g1,g2):
     sp=[]
     #Griglia di tolx*toly punti. Escludo i valori a=0,a=1
     grid = product(np.linspace(0+eps/100,1-eps/100,tolx),np.linspace(-C,C,toly))
     for i,j in grid:
-        if isSpecial(intersect_line_2EPG(i,j,eps,f1ppc,f2ppc,g1ppc,g2ppc),i,eps):
+        if isSpecial(intersect_line_2EPG(i,j,eps,xf,f1,f2,xg,g1,g2),i,eps):
             sp.append([i,j])
 
     #Plotting
@@ -89,26 +92,6 @@ def special_set(C,tolx,toly,eps,f1ppc,f2ppc,g1ppc,g2ppc):
         plt.xlabel('a')
         plt.ylabel('b')
     return np.array(sp)
-
-
-
-
-
-#TESTING
-if __name__ == "__main__":
-    intersection = np.array([np.array([0,0]),np.array([0,1]),np.array([0.001,0.004]),
-                             np.array([2,3]),np.array([2.001,7]),np.array([-1,7.001])])
-    a = 0.2
-
-    pairsofpairs = combinations(list(combinations(intersection,2)),2)
-    for p,q in pairsofpairs:
-        print(p)
-        print(q)
-        print(' --- ')
-
-
-    isSpecial(intersection,a,0.05)
-
 
 
 
