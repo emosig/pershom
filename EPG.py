@@ -27,7 +27,7 @@ class EPGtab(tk.Frame):
                             ("Javascript","*.js"),
                             ("HTML","*.html"),
                             ("CSS","*.css")])
-            EPG_file(self.epg,self.titl,name=filename)
+            EPG_file(self.epg+self.improper_arcs,self.titl,name=filename)
 
         except Exception as e:
             print(e)
@@ -316,72 +316,6 @@ class EPGplotter(Frame):
         self.tab_counter=1
 
 
-'''def newFrameFromFig(fig,master):
-    frame = ttk.Frame(master)
-    frame.pack(fill=tk.BOTH)
-    canvas = FigureCanvasTkAgg(fig,master=frame)  # A tk.DrawingArea.
-    canvas.draw()
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-    toolbar = NavigationToolbar2Tk(canvas, frame)
-    toolbar.update()
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-    return frame'''
-'''
-def calcEPG():
-    print(f1.get(),f2.get())
-
-    try: 
-        f_1= parse(f1.get())
-    except Exception as e:
-        showerror(title='ERRORE', message='qualcosa è andato storto \n' + str(e))
-        print(e.__traceback__)
-        return
-
-    try: 
-        f_2= parse(f2.get())
-    except Exception as e:
-        showerror(title='ERRORE', message='qualcosa è andato storto \n' + str(e))
-        print(e.__traceback__)
-        return
-    
-    x,epg,improper_arcs,titl=EPG(f_1,f_2,200,0.001,0.1)
-    
-    return x,epg,improper_arcs,titl
-'''
-'''def plotEPG():
-    # i=i+1
-    x,epg,improper_arcs,titl=calcEPG()
-    fig=EPG_plot(epg,titl)
-    frame = newFrameFromFig(fig,notebook)
-    notebook.add(frame,text='plot')
-
-def fileEPG():
-    epg,titl=calcEPG()
-    EPG_file(epg,titl,name='puntiEPG')'''
-
-
-'''
-Istruzioni=ttk.Label(root,text='Inserisci la prima funzione polinomiale in seno e coseno')
-Istruzioni.pack()
-
-f1=StringVar(value='cos(x)')
-f1_entry=ttk.Entry(root, textvariable=f1)
-f1_entry.pack()
-f1_entry.focus()
-
-f2=StringVar(value='sen(x)+cos(y)')
-f2_entry=ttk.Entry(root, textvariable=f2)
-f2_entry.pack()
-
-PlotEPG=ttk.Button(root, command=plotEPG,text='Plot the EPG')
-PlotEPG.pack()
-
-FileEPG=ttk.Button(root, command=fileEPG,text='Save in File the EPG')
-FileEPG.pack()
-
-notebook = ttk.Notebook(root)
-notebook.pack(side =TOP,fill=BOTH)
-'''
 #per far spuntare la finestra
 root= Tk()
 root.title('Extended Pareto Grid Calculation')

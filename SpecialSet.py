@@ -7,14 +7,12 @@ PLOT = False
 #Modulo per il calcolo del special set. Voglio parametrizzare le rette r_{(a,b)}
 # e vedere per qualli a,b intersecano due EPG date verificando una condizione
 
-#PER ORA SOLTANTO a \in (0,1), CIOÈ a DIVERSO DA 0,1
-
 #Le rette r_{(a,b)} li posso vedere come le nostre rette di tipo 1 y=mx+a'
 #mettendo a = 1/m+1, b = a'
 
 #a è il parametro della retta r_{(a,b)}, intersection è r_{(a,b)} \cap (Unione delle due EPG)
 #eps viene usato come tolleranza per due cose diverse, ma per ora lasciamo stare
-#Ritorna true se (a,b) è Special e anche la coppia alfa, beta che lo rende Special
+#Ritorna true se (a,b) è Special
 def isSpecial(intersection, a, eps):
     if len(intersection) > 1:
         #Lista di coppie di coppie di punti in intersection escludendo le cose che vogliamo escludere (fidati)

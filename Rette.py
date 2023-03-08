@@ -3,32 +3,28 @@ from ourPolynomial import *
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-#Modelizzo 2 tipi di fasci di rette: il fascio di tipo 1 è dato da n rette 
-# parallele (y-mx+a=0)_a che variano nel parametro a fissata una pendenza m>0,
-# il fascio di tipo 2 è quello dato da n rette che passano per un punto fisso (a,b)
-# date da ((a,b)+v_k(x,y))_k che variano nel parametro k dove v_k = (cosk,senk) è
-# il vettore direttore della retta
+#Modelizzo un fascio di n rette parallele (y-mx+a=0)_a che variano nel parametro a 
+# fissata una pendenza m>0
 
 #Ci vogliono due nuovi parametri di precisione: uno per quanto "grosse" vogliamo
-# considerare le rette e un'altro per la quantità di rette considerate. Per ora li tengo fissi:
+# considerare le rette e un'altro per la quantità di rette considerate. Per ora li
+# tengo fissi:
 
 RETTE = 100  #quantità di rette 
 EPS = 0.1  #quanto grosse sono le rette
 
 #fisso valori default per la pendenza m per il tipo 1 e il punto (a,b) per il tipo 2
 M = 1
-A,B = 0,1
 
 #Fisso una tolleranza per i "cluster" di punti vicini nelle rette. I cluster più grandi 
 # saranno interpretati come rumore
-CLUST_EPS = 0.2
+CLUST_EPS = 0.05
 
-#Questo è soltanto per ora per vedere che le rette sono quelle che io voglio
-#In realtà noi queste intersezioni non le vorremmo vedere, sono per togliere l'errore
+#PLOT (for testing)
 PLOT = False
 
-#Intersezione con una retta di tipo 1 
-#Nel linguaggio di Frosini questa è r_{(1/m-1,a)}, (1/m-1,a) \in (0,1)x\R
+#Intersezione con una retta 
+#Nella notazione di Frosini questa è r_{(1/m-1,a)}, (1/m-1,a) \in (0,1)x\R
 def intersect_line_type1(ppc,f1,f2,a,m=M,eps=EPS,trasl=0,sort=False):
     inter = []
     for p in ppc:
@@ -41,7 +37,7 @@ def intersect_line_type1(ppc,f1,f2,a,m=M,eps=EPS,trasl=0,sort=False):
         inter = sorted(inter)
     return inter
 
-#Intersezione con un fascio di rette tipo 1
+#Intersezione con un fascio di rette
 def intersect_sheaf_type1(x,f1,f2,m=M,eps=EPS,sort=False):
     intersection_list = []  #Lista di liste: intersezione di ogni retta considerata con l'EPG
     ppc = [p for p,v in x.items() if v] #I punti pareto critici
@@ -65,44 +61,12 @@ def intersect_sheaf_type1(x,f1,f2,m=M,eps=EPS,sort=False):
     
     return np.array(intersection_list, dtype=object)
 
-#Intersezione con una retta di tipo 2
-def intersect_line_type2(ppc,f1,f2,k,a=A,b=B,eps=EPS):
-    inter = []
-    for p in ppc:
-        x = f1.eval(p[0],p[1])
-        y = f2.eval(p[0],p[1])
-        if abs(np.sin(k)*(y-b) - np.cos(k)*(x-a)) < eps:
-            if p not in inter:      #ATTENZIONE ---> FORSE VA BENE SEMPRE
-                inter.append(p)
-    return sorted(inter)
-
-#Intersezione con un fascio di rette tipo 2
-def intersect_sheaf_type2(x,f1,f2,a=A,b=B,eps=EPS):
-    intersection_list = []
-    ppc = [p for p,v in x.items() if v] #I punti pareto critici
-
-    #k lo faccio variare in [0,pi]
-    for k in np.linspace(0,np.pi,RETTE):
-        line = intersect_line_type2(ppc,f1,f2,k,a,b,eps)
-        if len(line)>0:
-            intersection_list.append(line)
-
-    if PLOT:
-        colors = cm.rainbow(np.linspace(0,1,len(intersection_list)))
-        for r,c in zip(intersection_list,colors):
-            plt.scatter([f1.eval(p[0],p[1]) for p in r],[f2.eval(p[0],p[1]) for p in r],s=4,color=c)
-        plt.title("Intersezione con " + str(RETTE) + " rette tipo 2 con tolleranza " + str(EPS))
-
-    return np.array(intersection_list, dtype=object)
-
 #Questo metodo trova i clusters 1d di punti in una retta
 def line_clusters(line,f1,f2):
     clusters = []
     curr_point = line[0]
     curr_cluster = [curr_point]
-#-----------------------
-#FARE EVAL QUA O FARLO DOPO????
-#-----------------------
+
     for p in line[1:]:
         #Calcolo le immagini di p e curr_point
         f1p = f1.eval(p[0],p[1])
@@ -149,7 +113,7 @@ def noise_reduction(x,f1,f2,tol,oldtitle,improper_arcs):
     epg=epg+improper_arcs
 
     #titolo che avrà il plot con le info varie
-    titl=oldtitle+' riduction'
+    titl=oldtitle+' reduction'
     
     return x,epg,titl
 

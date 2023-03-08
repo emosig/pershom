@@ -339,7 +339,7 @@ con parentesi, con ^ con ** con np.cos ecc con tutto quello che può scrivere di
 usando le parentesi per l'argomento delle funzioni trigonometriche'''
 #ora voglio provare anche a mettere dei coefficienti davanti a x e y ---> ammettere cos(2x)
 def parse(poli):                                    #poli è una stringa che rappresenta un input polinomiale da parte dell'utente
-    '''inizializzo il polinomio'''
+    #inizializzo il polinomio
     s=''                                            #stringa ausiliaria per salvare i vari coefficienti da trasformare in interi
     m=np.array([[0,0,0,0,0]])                       #lista che sarà la lista di monomi
     test=0
@@ -373,7 +373,7 @@ def parse(poli):                                    #poli è una stringa che rap
     test2=0
     temp=''            #serve per salvare l'esponente di seno e coseno in caso ci sia un coeff davanti a x,y
 
-    '''riempio m con i coefficienti giusti'''
+    #riempio m con i coefficienti giusti
     for c in poli:
         if c=='(':
             if poli[test-1] in ['s','n']:

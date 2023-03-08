@@ -2,20 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as scipy
 from ourPolynomial import *
-from itertools import product
 
 CLUST_MAX_ITER = 50     #Massimo di iterazioni per il clustering
 CLUST_VAR_STOP = 5      #Se in una iterazione di clustering aggiungo o tolgo 
                         #meno di questa quantità di punti, mi fermo
 
-'''
-#Metodo ausiliare per chiarezza nella funzione Pareto_crit. p = x[i].
-def append_aux(p,f_1,f_2,ppc,f1ppc,f2ppc):
-    ppc.append(p)
-    f1ppc.append(f_1.eval(p[0],p[1]))
-    f2ppc.append(f_2.eval(p[0],p[1]))
-    return True     #Questo true è per il booleano 'aggiunto'
-'''
 #definisco la funzione che calcola i punti critici
 def Critic(grf_1,grf_2,p1):
 
@@ -91,16 +82,6 @@ def Pareto(grf_1,grf_2,p1,p3):  #in input i gradienti
             grid.append((i,j))
 
     x = {p: False for p in grid}
-    '''
-    det=[]  #lista dei determinanti (anche se non serve)
-    ppc=[]  #lista dei punti Pareto Critici
-    f1ppc=[] #I punti che verrano plottati (immagini dei ppc)
-    f2ppc=[]
-    
-    for i in range (0,l,1):
-        a=[grf_1[0].eval(x[i][0],x[i][1]),grf_1[1].eval(x[i][0],x[i][1])]
-        b=[grf_2[0].eval(x[i][0],x[i][1]),grf_2[1].eval(x[i][0],x[i][1])]
-    '''
     for p in x.keys():
         a=[grf_1[0].eval(p[0],p[1]),grf_1[1].eval(p[0],p[1])]
         b=[grf_2[0].eval(p[0],p[1]),grf_2[1].eval(p[0],p[1])]
@@ -110,11 +91,6 @@ def Pareto(grf_1,grf_2,p1,p3):  #in input i gradienti
 
         if abs(det)<=p3:
             x[p]=Pareto_crit(a,b,p3)
-    '''
-    ppc=np.array(ppc)
-    f1ppc=np.array(f1ppc)
-    f2ppc=np.array(f2ppc)
-    '''
     return x
 
 def EPG(f1,f2,p1,p3):
@@ -179,26 +155,15 @@ def get_square(ppc,f1,f2,trasl=0):
 #Per ora voglio ridurre i punti del cluster da 1/4 (vedere CONTROLLO alla fine del loop while)
 def recalculate_cluster(cluster,x,f1,f2,tol):
     ridurre_ancora = True    #Finché non ho ridotto "abbastanza" i punti del cluster questo rimane True
-    decresc = True
     i = 0       #Questo è un counter che arriva fino a 50 per evitare che il while vada avanti per sempre
     
     grf_1=f1.gradient()
     grf_2=f2.gradient()
-    #old_ppc = []
 
     while ridurre_ancora and i < CLUST_MAX_ITER:
-        #Qua decido se bisogna aumentare o ridurre la tolleranza
-        if decresc:
-            tol = tol/2
-        else:
-            tol = tol*3/2
-        '''
-        #Mi servono delle liste ausiliari di punti pareto-critici per controllare che sto
-        #effettivamente riducendo la quantità di punti nel cluster
-        temp_f1ppc = []
-        temp_f2ppc = []
-        temp_ppc = []
-        '''
+        #Ridurre la tolleranza
+        tol = tol/2
+
         counter = 0     #Conta quanti punti del cluster rimangono
         for p in cluster:
             a=[grf_1[0].eval(p[0],p[1]),grf_1[1].eval(p[0],p[1])]
@@ -209,56 +174,14 @@ def recalculate_cluster(cluster,x,f1,f2,tol):
         #CONTROLLO: HO EFFETTIVAMENTE RIDOTTO LA QUANTITÀ DI PUNTI NEL CLUSTER?
         if counter < len(cluster)/4:
             ridurre_ancora = False
-        '''
-        ###UN'ALTRO METODO PER RIDURRE LA TOLLERANZA. NON SI VEDONO DIFFERENZE CON L'ALTRO METODO
-        #CONTROLLO: C'È UNA DIFFERENZA TROPPO GRANDE CON L'ITERAZIONE PRECEDENTE?
-        if len(temp_ppc) < len(cluster)/4:
-            decresc = False
-            if abs(len(old_ppc)-len(temp_ppc)) < CLUST_VAR_STOP:    #Se ho variato molto poco in questa iterazione
-                ridurre_ancora = False
-            else:
-                old_ppc = temp_ppc.copy()
-        else:
-            decresc = True
-        '''
         i+=1
     return i    #Mi serve capire quante iterazioni ha fatto
 
-#Applica il metodo sopra per i cluster "grandi" e plotta
+#Applica il metodo sopra per i cluster "grandi"
 def manage_clusters(cluster_list,x,f1,f2,tol):
-    '''
-    ppc = [p for p,v in x.items() if v]
-    #Plot
-    fig,axes=plt.subplots(1,1)
-    
-    fig.set_size_inches(3,3)
-    # axes[0].scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
-    # axes[0].set_aspect('equal')
-    # axes[0].set_title('Vecchia Extended Pareto Grid con ' + str(len(ppc)) + ' punti')'''
+
     nclusters = 0   #Quanti clusters ho ridotto.
-    '''
-    old_points = [np.array([p,q]) for p,q in zip(f1ppc,f2ppc)]
-    diff_points = old_points.copy()
-    for line in cluster_list:
-        for cl in line:
-            #Quanto grandi sono i cluster che voglio trattare?
-            if len(cl) > 50:
-                iter = recalculate_cluster(cl,x,f1,f2,tol)
-                if iter < CLUST_MAX_ITER:   #Se l'algoritmo si è fermato prima del massimo di iterazioni
-                    nclusters += 1                
-                    #Adesso tolgo sostituisco i cluster di dict_clusters per le versioni ridotte
-                    #Sono convinto che c'è un modo migliore di fare questo però io non riesco a trovarlo
-                    recalc_points = [np.array([p,q]) for p,q in zip(temp_f1ppc,temp_f2ppc)]
-                    diff_points = list(set(map(tuple,diff_points)) - (set(map(tuple,cl))) - set(map(tuple,recalc_points)))
-
-                    #Plot
-                    axes[1].scatter([p[0] for p in recalc_points],[p[1] for p in recalc_points],s=0.8,color='red')
-
-    #Plot
-    axes[1].scatter([p[0] for p in diff_points],[p[1] for p in diff_points],s=0.2)
-    axes[1].set_aspect('equal')
-    axes[1].set_title('Nuova Extended Pareto Grid con ' + str(len(diff_points)) + ' punti')
-    '''
+    
     for line in cluster_list:
         for cl in line:
             #Quanto grandi sono i cluster che voglio trattare?
@@ -266,16 +189,5 @@ def manage_clusters(cluster_list,x,f1,f2,tol):
                 iter = recalculate_cluster(cl,x,f1,f2,tol)
                 if iter < CLUST_MAX_ITER:   #Se l'algoritmo si è fermato prima del massimo di iterazioni
                     nclusters += 1  
-    '''
-    #Plot
-    ppc = [p for p,v in x.items() if v]     #Nuovo ppc
     
-    # axes[1].scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
-    # axes[1].set_aspect('equal')
-    # axes[1].set_title('Nuova Extended Pareto Grid con ' + str(len(ppc)) + ' punti')          
-    axes.scatter([f1.eval(p[0],p[1]) for p in ppc],[f2.eval(p[0],p[1]) for p in ppc],s=0.2)
-    axes.set_title('Nuova Extended Pareto Grid con ' + str(len(ppc)) + ' punti')            
-    return fig'''
-
     return x
-    #return nclusters
