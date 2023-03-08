@@ -2,6 +2,7 @@ from ProgrammaEPG import *
 from ourPolynomial import *
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from statistics import mean
 
 #Modelizzo un fascio di n rette parallele (y-mx+a=0)_a che variano nel parametro a fissata una pendenza m>0
 
@@ -14,7 +15,7 @@ EPS = 0.1  #quanto grosse sono le rette
 M = 1
 
 #Fisso una tolleranza per i "cluster" di punti vicini nelle rette. I cluster più grandi saranno interpretati come rumore
-CLUST_EPS = 0.05
+CLUST_EPS = 0.25
 
 #PLOT (for testing)
 PLOT = False
@@ -131,13 +132,16 @@ def recalculate_cluster(cluster,x,f1,f2,tol):
 
 #Applica il metodo sopra per i cluster "grandi"
 def manage_clusters(cluster_list,x,f1,f2,tol):
-
-    nclusters = 0   #Quanti clusters ho ridotto.
-    
+    nclusters = 0   #Quanti clusters ho ridotto.    
     for line in cluster_list:
+        #Mi calcolo la lunghezza media di un cluster
+        #Soltanto ridurro quei cluster più grossi della media
+        avg_length = mean([len(cl) for cl in line])
+        if avg_length < 5:
+            avg_length = 5
         for cl in line:
             #Quanto grandi sono i cluster che voglio trattare?
-            if len(cl) > 50:
+            if len(cl) > avg_length:
                 iter,x = recalculate_cluster(cl,x,f1,f2,tol)
                 if iter < CLUST_MAX_ITER:   #Se l'algoritmo si è fermato prima del massimo di iterazioni
                     nclusters += 1  
