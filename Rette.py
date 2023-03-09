@@ -16,6 +16,8 @@ M = 1
 
 #Fisso una tolleranza per i "cluster" di punti vicini nelle rette. I cluster più grandi saranno interpretati come rumore
 CLUST_EPS = 0.25
+#Se sto variando la tolleranza di meno di questo valore, mi fermo
+CLUST_EPS_TOL_VAR = 0.05
 
 #PLOT (for testing)
 PLOT = False
@@ -107,26 +109,31 @@ def sheaf_of_clusters(intersection_list,f1,f2):
 #Cosa vuol dire abbastanza piccolo? Si potrebbe specificare con un ulteriore parametro
 #Per ora voglio ridurre i punti del cluster da 1/4 (vedere CONTROLLO alla fine del loop while)
 def recalculate_cluster(cluster,x,f1,f2,tol):
-    ridurre_ancora = True    #Finché non ho ridotto "abbastanza" i punti del cluster questo rimane True
-    i = 0       #Questo è un counter che arriva fino a 50 per evitare che il while vada avanti per sempre
-    
+    ridurre_ancora = True       #Finché non ho ridotto "abbastanza" i punti del cluster questo rimane True
+    i = 0                       #Questo è un counter che arriva fino a 50 per evitare che il while vada avanti per sempre
+    max_tol_such_that_0 = 0     #Mi serve per capire quando non c'è speranza di ridurre molto di più
     grf_1=f1.gradient()
     grf_2=f2.gradient()
 
     while ridurre_ancora and i < CLUST_MAX_ITER:
         #Ridurre la tolleranza
         tol = tol/2
-        counter = 0     #Conta quanti punti del cluster rimangono
+        counter = len(cluster)     #Conta quanti punti del cluster tolgo
         for p in cluster:
             a=[grf_1[0].eval(p[0],p[1]),grf_1[1].eval(p[0],p[1])]
             b=[grf_2[0].eval(p[0],p[1]),grf_2[1].eval(p[0],p[1])]
-            if Pareto_crit(a,b,tol):
-                counter +=1
-            else:
+            if not Pareto_crit(a,b,tol):
+                counter -=1
                 x[p]=False
         #CONTROLLO: HO EFFETTIVAMENTE RIDOTTO LA QUANTITÀ DI PUNTI NEL CLUSTER?
-        if counter < len(cluster)/4:
+        if counter < len(cluster)/4 and counter > 0:
             ridurre_ancora = False
+        elif abs(tol - max_tol_such_that_0) < CLUST_EPS_TOL_VAR:
+            ridurre_ancora = False
+        #CONTROLLO: HO RIDOTTO TROPPO?
+        elif counter == 0:
+            max_tol_such_that_0 = tol
+            tol = tol*3
         i+=1
     return i,x  #Mi serve capire quante iterazioni ha fatto
 
@@ -135,7 +142,7 @@ def manage_clusters(cluster_list,x,f1,f2,tol):
     nclusters = 0   #Quanti clusters ho ridotto.    
     for line in cluster_list:
         #Mi calcolo la lunghezza media di un cluster
-        #Soltanto ridurro quei cluster più grossi della media
+        #Soltanto ridurro quei cluster più grossi di max{5,media len(cluster)}
         avg_length = mean([len(cl) for cl in line])
         if avg_length < 5:
             avg_length = 5
